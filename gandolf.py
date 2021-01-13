@@ -1,4 +1,5 @@
 import random
+
 def randomCard():
     num1 = random.randint(1,13)
     num2 = random.randint(1,4)
@@ -11,16 +12,50 @@ def randomCard():
     suit = suits[num2]                                                  #future: change so doesnt pick same random card - there can be duplicates atm - use while loop maybe
     return (value,suit)
 
-rows, cols = (6,6) 
-table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
-virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
 
-p1 = [randomCard(),randomCard(),randomCard(),randomCard()]
-p2 = [randomCard(),randomCard(),randomCard(),randomCard()]              #selects radnom card
-p3 = [randomCard(),randomCard(),randomCard(),randomCard()]
-p4 = [randomCard(),randomCard(),randomCard(),randomCard()]
+class Player:
+    def __init__(self, playerNumber, cards, totalPoints, mistakeCounter):
+        self.playerNumber = playerNumber
+        self.cards = cards
+        self.totalPoints = totalPoints
+        self.mistakeCounter = mistakeCounter
 
+class Moves:
+    def __init__(self,deck,cards,discardPile):
+        self.deck = deck
+        self.cards = cards
+        self.discardPile = discardPile
+    def pickUpNewCardFromDeck(self, deck):
+        return self.deck[random.randint(0,len(self.deck) - 1)]
+
+    def swapNewCardWithOld(self, newCard, cards, discardPile):
+        x = int(input("which card would you like to swap (1,2,3,4): "))
+        discard = self.cards[x-1]
+        self.cards[x-1] = newCard
+        self.discardPile.append(discard)
+
+    def lookAtOwnCard(self, cards, newCard):
+        if newCard[0] == "7" or newCard[0] == "8" :
+            position = int(input("which card would you like to look at (1,2,3,4): "))
+            position = position -1
+            print(cards[position])
+        else:
+            print("not 7 or 8")
     
+    def lookAtSomeoneElsesCard(self, newCard, player2, player3, player4):
+        if newCard[0] == "9" or newCard[0] == "10":
+            playerNumber = int(input("which players card would you like to look at (2,3,4): "))
+            position = int(input("which card would you like to look at (1,2,3,4): "))
+            position = position -1
+            if playerNumber == 2:
+                print(p2.cards[position][0])
+            elif playerNumber == 3:
+                print(p3.cards[position][0])
+            elif playerNumber == 4:
+                print(p4.cards[position][0])
+        else:
+            print("not 9 or 10")
+
 def createTable(table,p1,p2,p3,p4):         #creates table to store actual values of cards nd positions
     for i in range (4):
         table[5][i+1] = p1[i]
@@ -56,14 +91,43 @@ def createVirtualTable(table,p1,p2,p3,p4):      #creates virutal table with just
         virtualTable[i+1][5] = Vp4[i] 
 
     return virtualTable 
+    
+rows, cols = (6,6) 
+table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
+virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
 
-table = createTable(table,p1,p2,p3,p4)
+c1 = [randomCard(),randomCard(),randomCard(),randomCard()]
+c2 = [randomCard(),randomCard(),randomCard(),randomCard()]              #selects radnom card
+c3 = [randomCard(),randomCard(),randomCard(),randomCard()]
+c4 = [randomCard(),randomCard(),randomCard(),randomCard()]
+
+deck = [("7","hearts"),("8","diamonds"),("3","spades"),("2","clubs")]
+discardPile = [("3","hearts")]
+
+p1 = Player(1,c1,0,0)
+p2 = Player(2,c2,0,0)
+p3 = Player(3,c3,0,0)
+p4 = Player(3,c4,0,0)
+
+
+table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
 for row in table: 
     for elem in row:
         print(elem, end=' ')        # this is how you display 2d arrays
     print()
 
-for row in createVirtualTable(table,p1,p2,p3,p4):
+for row in createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards):
     for elem in row:
         print(elem, end=' ')
     print()
+
+Moves = Moves(deck,p1.cards,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
+newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck
+print("card drawn:", newCard)                       
+option = input(("would you like to swap cards with:", newCard))         
+if option == "yes":
+    Moves.swapNewCardWithOld(newCard, p1.cards, discardPile)        #swap cards with deck
+    print(p1.cards)
+    print(discardPile)                                              #just shows it worked
+Moves.lookAtOwnCard(p1.cards,newCard)
+Moves.lookAtSomeoneElsesCard(newCard, p2, p3, p4)               #used for showing somone elses card
