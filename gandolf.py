@@ -1,17 +1,11 @@
 import random
+from random import shuffle
+import numpy as np
 
-def randomCard():
-    num1 = random.randint(1,13)
-    num2 = random.randint(1,4)
-    value = ""
-    suit = ""
-
-    values = {11: "Jack", 12: "Queen", 13: "King"} 
-    value = values.get(num1, num1)
-    suits = {1: "Spades", 2: "Hearts", 3: "Diamonds", 4: "Clubs"}       #dictionary for making the deck; uses random to select random cards 
-    suit = suits[num2]                                                  #future: change so doesnt pick same random card - there can be duplicates atm - use while loop maybe
-    return (value,suit)
-
+class Card:
+    def __init__(self, value, color):
+        self.value = value
+        self.color = color
 
 class Player:
     def __init__(self, playerNumber, cards, totalPoints, mistakeCounter):
@@ -25,14 +19,15 @@ class Moves:
         self.deck = deck
         self.cards = cards
         self.discardPile = discardPile
+
     def pickUpNewCardFromDeck(self, deck):
-        return self.deck[random.randint(0,len(self.deck) - 1)]
+        return deck[random.randint(0,len(deck) - 1)]
 
     def swapNewCardWithOld(self, newCard, cards, discardPile):
         x = int(input("which card would you like to swap (1,2,3,4): "))
-        discard = self.cards[x-1]
-        self.cards[x-1] = newCard
-        self.discardPile.append(discard)
+        discard = cards[x-1]
+        cards[x-1] = newCard
+        discardPile.append(discard)
 
     def lookAtOwnCard(self, cards, newCard):
         if newCard[0] == "7" or newCard[0] == "8" :
@@ -48,11 +43,11 @@ class Moves:
             position = int(input("which card would you like to look at (1,2,3,4): "))
             position = position -1
             if playerNumber == 2:
-                print(p2.cards[position][0])
+                print(p2.cards[position])
             elif playerNumber == 3:
-                print(p3.cards[position][0])
+                print(p3.cards[position])
             elif playerNumber == 4:
-                print(p4.cards[position][0])
+                print(p4.cards[position])
         else:
             print("not 9 or 10")
 
@@ -90,19 +85,41 @@ def createVirtualTable(table,p1,p2,p3,p4):      #creates virutal table with just
             Vp4[i] = " "
         virtualTable[i+1][5] = Vp4[i] 
 
-    return virtualTable 
+    return virtualTable
+
+def displayCardToPlayer(card):
+    return (f"the {card[0]} of {card[1]}")          #displays cards in user readable/friendly way 
     
 rows, cols = (6,6) 
 table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
 virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
 
-c1 = [randomCard(),randomCard(),randomCard(),randomCard()]
-c2 = [randomCard(),randomCard(),randomCard(),randomCard()]              #selects radnom card
-c3 = [randomCard(),randomCard(),randomCard(),randomCard()]
-c4 = [randomCard(),randomCard(),randomCard(),randomCard()]
+colors = ['heart', 'diamonds', 'spades', 'clubs']
+Deck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
 
-deck = [("7","hearts"),("8","diamonds"),("3","spades"),("2","clubs")]
-discardPile = [("3","hearts")]
+deck = []
+suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
+
+for i in range(0,52):
+    if Deck[i].value >= 11 or Deck[i].value == 1:                       #if the vale is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
+        value = suits.get(Deck[i].value)
+        deck.append([value, Deck[i].color])
+    else:
+        deck.append([str(Deck[i].value), Deck[i].color])
+
+
+random.shuffle(deck)            # shuffle deck
+
+c1 = ([deck[i] for i in range (0,4)])
+deck = deck[4:]                                 #deals cards - takes first 4 cards from the deck and then removes the cards from the deck 
+c2 = ([deck[i] for i in range (0,4)])
+deck = deck[4:]
+c3 = ([deck[i] for i in range (0,4)])
+deck = deck[4:]
+c4 = ([deck[i] for i in range (0,4)])
+deck = deck[4:]
+
+discardPile = []
 
 p1 = Player(1,c1,0,0)
 p2 = Player(2,c2,0,0)
@@ -123,8 +140,9 @@ for row in createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards):
 
 Moves = Moves(deck,p1.cards,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck
-print("card drawn:", newCard)                       
-option = input(("would you like to swap cards with:", newCard))         
+print(f"card drawn:", displayCardToPlayer(newCard))                       
+option = input(f"would you like to swap cards with {displayCardToPlayer(newCard)}: ")
+
 if option == "yes":
     Moves.swapNewCardWithOld(newCard, p1.cards, discardPile)        #swap cards with deck
     print(p1.cards)
