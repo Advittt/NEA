@@ -2,6 +2,7 @@ import random
 from random import shuffle
 import numpy as np
 
+
 class Card:
     def __init__(self, value, color):
         self.value = value
@@ -20,25 +21,53 @@ class Moves:
         self.cards = cards
         self.discardPile = discardPile
 
-    def pickUpNewCardFromDeck(self, deck):
+    def pickUpNewCardFromDeck(self, deck):                      #pick up card from deck
         return deck[random.randint(0,len(deck) - 1)]
 
-    def swapNewCardWithOld(self, newCard, cards, discardPile):
+    def swapNewCardWithOld(self, newCard, cards, discardPile):                  #swap card with deck
         x = int(input("which card would you like to swap (1,2,3,4): "))
         discard = cards[x-1]
         cards[x-1] = newCard
         discardPile.append(discard)
+    
+    def swapMultipleCardsWithTheDeck(self, newCard, cards, discardPile):                  #swap multiple cards with deck
+        x = int(input("how many of your cards do you want to swap (2,3,4)"))
+        cardsSwapping = []
+        cardPosition = []                               
+        for i in range(x):
+            a = int(input("which card do you want to swap (1,2,3,4)")) -1       
+            cardPosition.append(str(a + 1))                                     #stores the position of the cards they want to store
+            cardsSwapping.append(int(cards[a][0]))                              #stores the value of the cards
+
+        if round(np.power(np.prod(cardsSwapping), 1/len(cardsSwapping)),10) == float(cards[0][0]):      #checks if all the cards have the same valu by multpilying them all and then finding the nth root using numpy
+            for i in range(x):
+                discardPile.append(cards[i])                #discards the cards and formats the (virtual)table
+                cards[i] = " "
+            
+            cardPosition = (", ".join(cardPosition))            #gets rid of []
+            y = int(input(f"which position would you like to add the new card to {cardPosition}: ")) -1
+            cards[y] = newCard
+            print(f"you have added the new card to position {y + 1}")           #put the new card in the position requested 
+        else:
+            p1.mistakeCounter += 5
+            print("you have made a mistake")
+            print("5 penalty points added")
+            print(f"you have {p1.mistakeCounter} penalty points")
 
     def lookAtOwnCard(self, cards, newCard):
-        if newCard[0] == "7" or newCard[0] == "8" :
+        if newCard[0] == "7" or newCard[0] == "8" :                                        #7/8 - look at own card
             position = int(input("which card would you like to look at (1,2,3,4): "))
             position = position -1
             print(cards[position])
         else:
-            print("not 7 or 8")
+            p1.mistakeCounter += 5
+            print("you have made a mistake")
+            print("5 penalty points added")
+            print(f"you have {p1.mistakeCounter} penalty points")
+
     
-    def lookAtSomeoneElsesCard(self, newCard, player2, player3, player4):
-        if newCard[0] == "9" or newCard[0] == "10":
+    def lookAtSomeoneElsesCard(self, newCard):
+        if newCard[0] == "9" or newCard[0] == "10":                                                     #9/10 - look at somone elses card
             playerNumber = int(input("which players card would you like to look at (2,3,4): "))
             position = int(input("which card would you like to look at (1,2,3,4): "))
             position = position -1
@@ -49,7 +78,31 @@ class Moves:
             elif playerNumber == 4:
                 print(p4.cards[position])
         else:
-            print("not 9 or 10")
+            p1.mistakeCounter += 5
+            print("you have made a mistake")
+            print("5 penalty points added")
+            print(f"you have {p1.mistakeCounter} penalty points")
+
+    def swapWithSomoneElse(self,newCard):
+        if newCard[0] == "Jack":                                                #jack - swap cards
+            ownCard = int(input("which card do you want to swap (1,2,3,4)")) - 1
+            playerNumber = int(input("which players card would you like to swap with (2,3,4): "))
+            position = int(input("which of their cards would you like swap with (1,2,3,4): ")) - 1
+            temp = p1.cards[ownCard]
+            if playerNumber == 2:
+                p1.cards[ownCard] = p2.cards[position]
+                p2.cards[position] = temp
+            elif playerNumber == 3:
+                p1.cards[ownCard] = p3.cards[position]
+                p3.cards[position] = temp
+            elif playerNumber == 4:
+                p1.cards[ownCard] = p4.cards[position]
+                p4.cards[position] = temp
+        else:
+            p1.mistakeCounter += 5
+            print("you have made a mistake")
+            print("5 penalty points added")
+            print(f"you have {p1.mistakeCounter} penalty points")
 
 def createTable(table,p1,p2,p3,p4):         #creates table to store actual values of cards nd positions
     for i in range (4):
@@ -61,6 +114,7 @@ def createTable(table,p1,p2,p3,p4):         #creates table to store actual value
     for i in range (4):
         table[i+1][5] = p4[i]
     return(table)
+    
 
 def createVirtualTable(table,p1,p2,p3,p4):      #creates virutal table with just x's which is displayed to  players 
     Vp1 = ["x"] * 4
@@ -73,19 +127,26 @@ def createVirtualTable(table,p1,p2,p3,p4):      #creates virutal table with just
             Vp1[i] = " "
         virtualTable[5][i+1] = Vp1[i]           
     for i in range (4):
-        if p2[i]== " ":
+        if p2[i]== "":
             Vp2[i] = " "
         virtualTable[i+1][0] = Vp2[i]
     for i in range (4):
-        if p3[i]== " ":
+        if p3[i]== "":
             Vp3[i] = " "
         virtualTable[0][i+1] = Vp3[i]
     for i in range (4):
-        if p4[i]== " ":
+        if p4[i]== "":
             Vp4[i] = " "
         virtualTable[i+1][5] = Vp4[i] 
 
     return virtualTable
+
+def displayTable(table):
+    for row in table: 
+        for elem in row:
+            print(elem, end=' ')        # this is how you display 2d arrays
+        print()
+    
 
 def displayCardToPlayer(card):
     return (f"the {card[0]} of {card[1]}")          #displays cards in user readable/friendly way 
@@ -127,16 +188,11 @@ p3 = Player(3,c3,0,0)
 p4 = Player(3,c4,0,0)
 
 
-table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
-for row in table: 
-    for elem in row:
-        print(elem, end=' ')        # this is how you display 2d arrays
-    print()
+table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+displayTable(table)                 #display the table
 
-for row in createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards):
-    for elem in row:
-        print(elem, end=' ')
-    print()
+virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+displayTable(virtualTable)
 
 Moves = Moves(deck,p1.cards,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck
@@ -145,7 +201,25 @@ option = input(f"would you like to swap cards with {displayCardToPlayer(newCard)
 
 if option == "yes":
     Moves.swapNewCardWithOld(newCard, p1.cards, discardPile)        #swap cards with deck
-    print(p1.cards)
-    print(discardPile)                                              #just shows it worked
-Moves.lookAtOwnCard(p1.cards,newCard)
-Moves.lookAtSomeoneElsesCard(newCard, p2, p3, p4)               #used for showing somone elses card
+
+option = input("would you like to look at your own card: ")
+if option == "yes":
+    Moves.lookAtOwnCard(p1.cards, newCard)              #look at own card - 7/8
+
+option = input("would you like to look at someone elses card: ")
+if option == "yes":
+    Moves.lookAtSomeoneElsesCard(newCard)               #used for showing somone elses card - 9/10
+
+option = input("would you like to swap cards: ")
+if option == "yes":
+    Moves.swapWithSomoneElse(newCard)                   #swap with soone else - Jack
+
+option = input("would you like to swap multiple cards: ")
+if option == "yes":
+    Moves.swapMultipleCardsWithTheDeck(newCard, p1.cards, discardPile)  #swap multiple cards with one from deck
+
+print(f"discard pile: {discardPile}")
+table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+displayTable(table)
+virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+displayTable(virtualTable)
