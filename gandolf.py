@@ -22,7 +22,7 @@ class Moves:
         self.p2 = p2
         self.p3 = p3
         self.p4 = p4
-        self.allPlayers = [p1,p2,p3,p4]
+        self.allPlayers = [p1,p2,p3,p4]     #use this for selecting players
         self.discardPile = discardPile
 
     def pickUpNewCardFromDeck(self, deck):                      #pick up card from deck
@@ -111,6 +111,16 @@ class Moves:
             print("5 penalty points added")
             print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
 
+    def skip(self,newCard, counter):
+            if newCard[0] == "Queen":                                                #jack - swap cards
+                return True
+            else:
+                Moves.allPlayers[counter].mistakeCounter += 5
+                print("you have made a mistake")
+                print("5 penalty points added")
+                print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
+
+
 def createTable(table,p1,p2,p3,p4):         #creates table to store actual values of cards nd positions
     for i in range (4):
         table[5][i+1] = p1[i]
@@ -179,8 +189,6 @@ for i in range(0,52):
 random.shuffle(deck)            # shuffle deck
 
 c1 = ([deck[i] for i in range (0,4)])
-c1 [0] = ["Jack", "Spades"]
-c1 [1] = ["Jack", "Hearts"]
 deck = deck[4:]                                 #deals cards - takes first 4 cards from the deck and then removes the cards from the deck 
 c2 = ([deck[i] for i in range (0,4)])
 deck = deck[4:]
@@ -200,69 +208,83 @@ p4 = Player(4,c4,0,0)
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 
-
-    
-gameActive = True
-while gameActive == True:
+skip = False            # for queen
+Gandalf = False
+while Gandalf == False:
     for i in range (4):
-        print(" \n")
-        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-        displayTable(table)
-        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-        print(" \n")
-
-        displayTable(virtualTable)
-        print(" \n")
-        print("**************")
-        print(f"PLAYER {i+1} GO:")
-        print("**************\n")
-
-        newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck -- SOMETHIGN BUGGING KEEPS PICKING SAME REPEATED CARDS
-        print(f"card drawn:", displayCardToPlayer(newCard))                       
-        option = input(f"would you like to swap cards with {displayCardToPlayer(newCard)}: \n")
-
-        done = False
-        while done == False:
-            no = 0
-            if option == "yes":
-                Moves.swapNewCardWithOld(newCard, Moves.allPlayers[i].cards, discardPile)        #swap cards with deck
-            else:
-                no +=1
-
-            option = input("would you like to look at your own card: \n")
-            if option == "yes":
-                Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8
-            else:
-                no +=1
-
-            option = input("would you like to look at someone elses card: \n")
-            if option == "yes":
-                Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
-            else:
-                no +=1
-
-            option = input("would you like to swap cards with somone else: \n")
-            if option == "yes":
-                Moves.swapWithSomoneElse(newCard, i)                   #swap with soone else - Jack
-            else:
-                no +=1
-
-            option = input("would you like to swap multiple cards: \n")
-            if option == "yes":
-                Moves.swapMultipleCardsWithTheDeck(newCard, Moves.allPlayers[i].cards, discardPile,i)  #swap multiple cards with one from deck
-            else:
-                no +=1
-            
-            if no ==5:
-                discardPile.append(newCard)
-                deck.pop(0)
-            print(f"discard pile: {discardPile}\n")     #DOES NOT SHOW AFTER SWAPPING JACK
-
+        if skip == False:
+            print(" \n")
             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
             displayTable(table)
             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-            displayTable(virtualTable)
+            print(" \n")
 
-            finished = input("are you done with your go (yes or no)")
-            if finished =="yes":
-                done = True
+            displayTable(virtualTable)
+            print(" \n")
+            print("**************")
+            print(f"PLAYER {i+1} GO:")
+            print("**************\n")
+
+            #newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck -- SOMETHIGN BUGGING KEEPS PICKING SAME REPEATED CARDS
+            newCard = ["Queen","Hearts"]
+            print(f"card drawn:", displayCardToPlayer(newCard))                       
+            option = input(f"would you like to swap cards with {displayCardToPlayer(newCard)}: \n")
+
+            done = False
+            while done == False:
+                no = 0
+                if option == "yes":
+                    Moves.swapNewCardWithOld(newCard, Moves.allPlayers[i].cards, discardPile)        #swap cards with deck
+                #else:
+                    #no +=1
+
+                option = input("would you like to look at your own card: \n")
+                if option == "yes":
+                    Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8
+                #else:
+                    #no +=1
+
+                option = input("would you like to look at someone elses card: \n")
+                if option == "yes":
+                    Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
+                #else:
+                    #no +=1
+
+                option = input("would you like to swap cards with somone else: \n")
+                if option == "yes":
+                    Moves.swapWithSomoneElse(newCard, i)                   #swap with soone else - Jack
+                #else:
+                    #no +=1
+                
+                option = input("would you like to make the nex player skip a go: \n")
+                if option == "yes":
+                    skip = Moves.skip(newCard, i)                   #skip a go - Queen
+
+                #else:
+                    #no +=1
+
+                option = input("would you like to swap multiple cards: \n")
+                if option == "yes":
+                    Moves.swapMultipleCardsWithTheDeck(newCard, Moves.allPlayers[i].cards, discardPile,i)  #swap multiple cards with one from deck
+                #else:
+                    #no +=1
+                    
+                #print(no)
+                """if no >= 5:
+                    discardPile.append(newCard)
+                    deck.pop(0)
+                print(f"discard pile: {discardPile}\n")"""     #DOES NOT SHOW AFTER SWAPPING JACK - WILL HAVE TO SROT OUT DISCARD PILE AFTER UI IS MADE
+
+                table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                displayTable(table)
+                virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                displayTable(virtualTable)
+
+                finished = input("are you done with your go (yes or no)")
+                if finished =="yes":
+                    done = True
+        else:
+            print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
+            skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to he next players turn
+            done = True
+        
