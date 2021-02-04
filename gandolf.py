@@ -1,12 +1,25 @@
 import random
 from random import shuffle
 import numpy as np
+from collections import deque
 
 
 class Card:
     def __init__(self, value, color):
         self.value = value
         self.color = color
+
+class Stack:
+    def __init__(self):         #deck is now a stack so all you can do is push or pop. first in last out
+        self.deck = deque()
+    def push(self, card):
+        self.deck.append(card)
+    def pop(self):
+        return self.deck.popleft()
+    def peek(self,val):
+        return self.deck[val]
+    def size(self):
+        return len(self.deck)
 
 class Player:
     def __init__(self, playerNumber, cards, totalPoints, mistakeCounter):
@@ -26,8 +39,7 @@ class Moves:
         self.discardPile = discardPile
 
     def pickUpNewCardFromDeck(self, deck):                      #pick up card from deck
-        newCard = deck[0]
-        deck.pop(0)
+        newCard = deck.pop()
         return newCard
     
     def pickUpNewCardFromDiscardPile(self, discardPile):                      #pick up card from deck
@@ -82,6 +94,8 @@ class Moves:
             position = int(input("which card would you like to look at (1,2,3,4): "))
             position = position -1
             print(displayCardToPlayer(cards[position]))
+            discardPile.append(newCard)
+            newCard = None
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
             print("you have made a mistake")
@@ -97,6 +111,8 @@ class Moves:
             playerNumber = int(input(f"which players card would you like to look at {playerNumberList}: "))
             position = int(input("which card would you like to look at (1,2,3,4): ")) -1
             print(displayCardToPlayer(Moves.allPlayers[playerNumber -1].cards[position]))
+            discardPile.append(newCard)
+            newCard = None
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
             print("you have made a mistake")
@@ -116,7 +132,7 @@ class Moves:
             Moves.allPlayers[counter].cards[ownCard] = Moves.allPlayers[playerNumber].cards[position]
             Moves.allPlayers[playerNumber].cards[position] = temp
             discardPile.append(newCard)
-            newCard.clear()
+            newCard = None
 
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
@@ -127,7 +143,7 @@ class Moves:
     def skip(self,newCard, counter):
             if newCard[0] == "Queen":                                                #queen - skip go
                 discardPile.append(newCard)
-                newCard.clear()
+                newCard = None
                 return True
             else:
                 Moves.allPlayers[counter].mistakeCounter += 5
@@ -138,6 +154,8 @@ class Moves:
     def CheckCommandIsValid(self, Items):
         if Items[0].upper() == "SLAP":
             return "SLAP"
+        elif Items[0] == "help":
+            return "help"                   
         elif Items[0] == "draw" and (Items[1] == "deck" or Items[1] == "discard"):
             return "draw"
         elif Items[0] == "swap" and (Items[1] == "card" or Items[1] == "cards"):
@@ -148,7 +166,7 @@ class Moves:
             return "lookAtSomoneElses"
         elif Items[0] == "play" and Items[1] == "jack":
             return "Jack"
-        elif Items[0] == "play" and Items[1] == "Queen":
+        elif Items[0] == "play" and Items[1] == "queen":
             return "Queen"      
         elif Items[0] == "gandalf":
             return "gandalf"
@@ -225,45 +243,67 @@ def displayTable(table):
     
 
 def displayCardToPlayer(card):
-    return (f"the {card[0]} of {card[1]}")          #displays cards in user readable/friendly way 
+    return (f"the {card[0]} of {card[1]}")          #displays cards in user readable/friendly way
+
+def help():
+    print("""VALID COMMANDS:
+    
+1)SLAP
+2)draw card deck = draw a card from the deck
+3)draw discard = draw a card from the discard
+6)swap card = swap one of your cards with the new card drawn
+7)swap cards = swap multpile of the same value cards with the new card drawn
+8)play 7 = look at one of your own cards
+9)play 8 = look at one of your own cards
+10)play 9 = look at somone elses card
+11)play 10 = look at somone elses card
+12)play jack = swap a card with someone else
+13)play queen = next player misses a go
+14)gandalf = you declare the final round of the game
+15)done = finsihed your go
+    """)
     
 rows, cols = (6,6) 
 table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
 virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
 
 colors = ['heart', 'diamonds', 'spades', 'clubs']
-Deck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
+tempDeck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
 
-deck = []
 suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
-
+x = []
+deck = Stack()
 for i in range(0,52):
-    if Deck[i].value >= 11 or Deck[i].value == 1:                       #if the vale is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
-        value = suits.get(Deck[i].value)
-        deck.append([value, Deck[i].color])
+    if tempDeck[i].value >= 11 or tempDeck[i].value == 1:                       #if the vale is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
+        value = suits.get(tempDeck[i].value)
+        x.append((value, tempDeck[i].color))
     else:
-        deck.append([str(Deck[i].value), Deck[i].color])
+        x.append((str(tempDeck[i].value), tempDeck[i].color))
 
 
-random.shuffle(deck)            # shuffle deck
+random.shuffle(x)            # shuffle deck
+for i in range (0,52):
+    deck.push(x[i])
 
-c1 = ([deck[i] for i in range (0,4)])
-deck = deck[4:]                                 #deals cards - takes first 4 cards from the deck and then removes the cards from the deck 
-c2 = ([deck[i] for i in range (0,4)])
-deck = deck[4:]
-c3 = ([deck[i] for i in range (0,4)])
-deck = deck[4:]
-c4 = ([deck[i] for i in range (0,4)])
-deck = deck[4:]
+c1 = []
+c2 = []
+c3 = []
+c4 = []
+for i in range (0,4):
+    c1.append(deck.peek(i))
+    deck.pop()
+    c2.append(deck.peek(i))
+    deck.pop()
+    c3.append(deck.peek(i))
+    deck.pop()
+    c4.append(deck.peek(i))
+    deck.pop()
 
 discardPile = []
-
 p1 = Player(1,c1,0,0)
 p2 = Player(2,c2,0,0)
 p3 = Player(3,c3,0,0)
 p4 = Player(4,c4,0,0)
-
-
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 
@@ -297,6 +337,8 @@ while Gandalf == False:
                     print("Invalid command")
                 elif ValidCommand == "SLAP":
                     Moves.slapCommand(Items)
+                elif ValidCommand == "help":
+                    help()
                 elif ValidCommand == "draw":
                     newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                     drawACardChances += 1
@@ -324,7 +366,9 @@ while Gandalf == False:
                     table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
                     displayTable(table)
                     virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                    displayTable(virtualTable)                   
+                    displayTable(virtualTable)
+                    discardPile.reverse()       #correct the order
+                    print(f"discard pile: {discardPile[0]}")                   
                 Commands.clear()
 
         else:
