@@ -10,7 +10,7 @@ class Card:
         self.color = color
 
 class Stack:
-    def __init__(self):         #deck is now a stack so all you can do is push or pop. first in last out
+    def __init__(self):         #deck is now a stack so all you can do is push or pop. first in last out like with normal deck of cards
         self.deck = deque()
     def push(self, card):
         self.deck.append(card)
@@ -22,11 +22,12 @@ class Stack:
         return len(self.deck)
 
 class Player:
-    def __init__(self, playerNumber, cards, totalPoints, mistakeCounter):
+    def __init__(self, playerNumber, cards, totalPoints, mistakeCounter, difficulty):
         self.playerNumber = playerNumber
         self.cards = cards
         self.totalPoints = totalPoints
         self.mistakeCounter = mistakeCounter
+        self.difficulty = difficulty
 
 class Moves:
     def __init__(self,deck,p1,p2,p3,p4,discardPile):
@@ -249,7 +250,7 @@ def help():
     print("""VALID COMMANDS:
     
 1)SLAP
-2)draw card deck = draw a card from the deck
+2)draw deck card= draw a card from the deck
 3)draw discard = draw a card from the discard
 6)swap card = swap one of your cards with the new card drawn
 7)swap cards = swap multpile of the same value cards with the new card drawn
@@ -300,20 +301,31 @@ for i in range (0,4):
     deck.pop()
 
 discardPile = []
-p1 = Player(1,c1,0,0)
-p2 = Player(2,c2,0,0)
-p3 = Player(3,c3,0,0)
-p4 = Player(4,c4,0,0)
+p1 = Player(1,c1,0,0,0)
+p2 = Player(2,c2,0,0,0)
+p3 = Player(3,c3,0,0,0)
+p4 = Player(4,c4,0,0,0)
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
+
 
 skip = False            # for queen
 Gandalf = False
 while Gandalf == False:
     for i in range (4):
         if skip == False:
+
+            for d in range (3):                                                                                     #set AI player difficulties
+                D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
+                1 = easy
+                2 = medium
+                3 = hard
+                """)
+                Moves.allPlayers[d+1].difficulty = D
+                print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
+            
             print(" \n")
-            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)  #create the table with actual cards
             displayTable(table)
             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
             print(" \n")
@@ -326,53 +338,68 @@ while Gandalf == False:
             drawACardChances = 0
             done = False
             while done == False:
-
-                Commands = []
-                Commands.append(input(f"Enter command: ").lower())
-                for C in Commands:
-                    Items = []                                      #splits commands up
-                    Items = C.split(" ")
-                ValidCommand = Moves.CheckCommandIsValid(Items)        #check if valid 
-                if ValidCommand == "notValid":
-                    print("Invalid command")
-                elif ValidCommand == "SLAP":
-                    Moves.slapCommand(Items)
-                elif ValidCommand == "help":
-                    help()
-                elif ValidCommand == "draw":
-                    newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                    drawACardChances += 1
-                elif ValidCommand == "swap":
-                    Moves.swapCommand(Items,newCard, discardPile,i)
-                    table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                    displayTable(table)
-                    virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                    displayTable(virtualTable)   
-                elif ValidCommand == "lookAtOwn":
-                    Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
-                elif ValidCommand == "lookAtSomoneElses":
-                    Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
-                elif ValidCommand == "Jack":
-                    Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
-                    table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                    displayTable(table)
-                    virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                    displayTable(virtualTable)
-                elif ValidCommand == "Queen":
-                    skip = Moves.skip(newCard, i)                   #skip a go - Queen
-                elif ValidCommand == "done":
-                    done = True             #go finished
-                    print("TABLE AT END OF TURN")
-                    table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                    displayTable(table)
-                    virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                    displayTable(virtualTable)
-                    discardPile.reverse()       #correct the order
-                    print(f"discard pile: {discardPile[0]}")                   
-                Commands.clear()
-
+                while i == 0: 
+                    Commands = []
+                    Commands.append(input(f"Enter command: ").lower())
+                    for C in Commands:
+                        Items = []                                      #splits commands up
+                        Items = C.split(" ")
+                    ValidCommand = Moves.CheckCommandIsValid(Items)        #check if valid 
+                    if ValidCommand == "notValid":
+                        print("Invalid command")
+                    elif ValidCommand == "SLAP":
+                        Moves.slapCommand(Items)
+                    elif ValidCommand == "help":
+                        help()
+                    elif ValidCommand == "draw":
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
+                        drawACardChances += 1
+                    elif ValidCommand == "swap":
+                        Moves.swapCommand(Items,newCard, discardPile,i)
+                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                        displayTable(table)
+                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                        displayTable(virtualTable)   
+                    elif ValidCommand == "lookAtOwn":
+                        Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
+                    elif ValidCommand == "lookAtSomoneElses":
+                        Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
+                    elif ValidCommand == "Jack":
+                        Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
+                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                        displayTable(table)
+                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                        displayTable(virtualTable)
+                    elif ValidCommand == "Queen":
+                        skip = Moves.skip(newCard, i)                   #skip a go - Queen
+                    elif ValidCommand == "done":
+                        done = True             #go finished
+                        i = i+1
+                        print("TABLE AT END OF TURN")
+                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                        displayTable(table)
+                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                        displayTable(virtualTable)
+                        discardPile.reverse()       #correct the order
+                        print(f"discard pile: {discardPile[0]}")                   
+                    Commands.clear()
+                
+                if i == 1:          #player 2 AI
+                    print(f"PLAYER {i+1}'S GO:")    
+                    done = True
+                    print(Moves.allPlayers[1].playerNumber)
+                elif i == 2:        #player 3 AI
+                    print(f"PLAYER {i+1}'S GO:")    
+                    done = True
+                    print(Moves.allPlayers[2].playerNumber)
+                else:               #player 4 AI
+                    print(f"PLAYER {i+1}'S GO:")    
+                    done = True
+                    print(Moves.allPlayers[3].playerNumber)
+                    
         else:
             print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
-            skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to he next players turn
+            skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to the next players turn
             done = True
-        
+
+    
