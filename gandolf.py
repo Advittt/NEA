@@ -317,94 +317,110 @@ p4 = Player(4,c4,0,0,0)
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 
+def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
+    skip = False            # for queen
+    Gandalf = False
+    for d in range (3):                                                                                     #set AI player difficulties
+        D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
+        1 = easy
+        2 = medium
+        3 = hard
+        """)
+        Moves.allPlayers[d+1].difficulty = D
+        print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
 
-skip = False            # for queen
-Gandalf = False
-for d in range (3):                                                                                     #set AI player difficulties
-    D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
-    1 = easy
-    2 = medium
-    3 = hard
-    """)
-    Moves.allPlayers[d+1].difficulty = D
-    print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
+    while Gandalf == False:
+        for i in range (4):
+            if skip == False:        
+                print(" \n")
+                table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)  #create the table with actual cards
+                displayTable(table)
+                virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                print(" \n")
 
-while Gandalf == False:
-    for i in range (4):
-        if skip == False:        
-            print(" \n")
-            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)  #create the table with actual cards
-            displayTable(table)
-            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-            print(" \n")
+                displayTable(virtualTable)
+                print(" \n")
+                print("**************")
+                print(f"PLAYER {i+1}'S GO:")
+                print("**************\n")
+                callGandalfChecker = 0
+                drawACardChances = 0
+                done = False
+                while done == False:
+                    while i == 0: 
+                        Commands = []
+                        Commands.append(input(f"Enter command: ").lower())
+                        for C in Commands:
+                            Items = []                                      #splits commands up
+                            Items = C.split(" ")
+                        ValidCommand = Moves.CheckCommandIsValid(Items)        #check if valid 
 
-            displayTable(virtualTable)
-            print(" \n")
-            print("**************")
-            print(f"PLAYER {i+1}'S GO:")
-            print("**************\n")
-            callGandalfChecker = 0
-            drawACardChances = 0
-            done = False
-            while done == False:
-                while i == 0: 
-                    Commands = []
-                    Commands.append(input(f"Enter command: ").lower())
-                    for C in Commands:
-                        Items = []                                      #splits commands up
-                        Items = C.split(" ")
-                    ValidCommand = Moves.CheckCommandIsValid(Items)        #check if valid 
+                        if ValidCommand == "notValid":
+                            print("Invalid command")
 
-                    if ValidCommand == "notValid":
-                        print("Invalid command")
+                        elif ValidCommand == "SLAP":
+                            Moves.slapCommand(Items)
 
-                    elif ValidCommand == "SLAP":
-                        Moves.slapCommand(Items)
+                        elif ValidCommand == "help":
+                            help()
 
-                    elif ValidCommand == "help":
-                        help()
+                        elif ValidCommand == "draw":
+                            newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
+                            drawACardChances += 1
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "draw":
-                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                        drawACardChances += 1
-                        callGandalfChecker += 1
+                        elif ValidCommand == "discard":
+                            Moves.discard(Items,discardPile, newCard)        #discard card drawn
+                            drawACardChances += 1
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "discard":
-                        Moves.discard(Items,discardPile, newCard)        #discard card drawn
-                        drawACardChances += 1
-                        callGandalfChecker += 1
+                        elif ValidCommand == "swap":
+                            Moves.swapCommand(Items,newCard, discardPile,i)
+                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                            displayTable(table)
+                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                            displayTable(virtualTable)
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "swap":
-                        Moves.swapCommand(Items,newCard, discardPile,i)
-                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                        displayTable(table)
-                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                        displayTable(virtualTable)
-                        callGandalfChecker += 1
+                        elif ValidCommand == "lookAtOwn":
+                            Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "lookAtOwn":
-                        Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
-                        callGandalfChecker += 1
+                        elif ValidCommand == "lookAtSomoneElses":
+                            Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "lookAtSomoneElses":
-                        Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
-                        callGandalfChecker += 1
+                        elif ValidCommand == "Jack":
+                            Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
+                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                            displayTable(table)
+                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                            displayTable(virtualTable)
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "Jack":
-                        Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
-                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                        displayTable(table)
-                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                        displayTable(virtualTable)
-                        callGandalfChecker += 1
+                        elif ValidCommand == "Queen":
+                            skip = Moves.skip(newCard, i)                   #skip a go - Queen
+                            callGandalfChecker += 1
 
-                    elif ValidCommand == "Queen":
-                        skip = Moves.skip(newCard, i)                   #skip a go - Queen
-                        callGandalfChecker += 1
+                        elif ValidCommand == "gandalf":
+                            Gandalf = Moves.gandalfCommand(callGandalfChecker)                   #Gandalf - end game
+                            if Gandalf == True:
+                                done = True             #go finished
+                                i = i+1
+                                print("TABLE AT END OF TURN")
+                                table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                                displayTable(table)
+                                virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                                displayTable(virtualTable)
+                                discardPile.reverse()       #correct the order
+                                if len(discardPile) !=0:
+                                    print(f"discard pile: {discardPile[0]}")  
+                                Commands.clear()
+                            else:
+                                print("cannot call gandalf")
+                                print("you can only call gandalf at the beginning of your round")
 
-                    elif ValidCommand == "gandalf":
-                        Gandalf = Moves.gandalfCommand(callGandalfChecker)                   #Gandalf - end game
-                        if Gandalf == True:
+                        elif ValidCommand == "done":
                             done = True             #go finished
                             i = i+1
                             print("TABLE AT END OF TURN")
@@ -413,42 +429,32 @@ while Gandalf == False:
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
                             discardPile.reverse()       #correct the order
-                            if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile[0]}")  
-                            Commands.clear()
-                        else:
-                            print("cannot call gandalf")
-                            print("you can only call gandalf at the beginning of your round")
-
-                    elif ValidCommand == "done":
-                        done = True             #go finished
-                        i = i+1
-                        print("TABLE AT END OF TURN")
-                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                        displayTable(table)
-                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                        displayTable(virtualTable)
-                        discardPile.reverse()       #correct the order
-                        print(f"discard pile: {discardPile[0]}")                   
-                    Commands.clear()
-                
-                if i == 1:          #player 2 AI
-                    print(f"PLAYER {i+1}'S GO:")    
-                    done = True
-                    print(Moves.allPlayers[1].playerNumber)
-                elif i == 2:        #player 3 AI
-                    print(f"PLAYER {i+1}'S GO:")    
-                    done = True
-                    print(Moves.allPlayers[2].playerNumber)
-                else:               #player 4 AI
-                    print(f"PLAYER {i+1}'S GO:")    
-                    done = True
-                    print(Moves.allPlayers[3].playerNumber)
+                            print(f"discard pile: {discardPile[0]}")                   
+                        Commands.clear()
                     
-        else:
-            print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
-            skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to the next players turn
-            done = True
-print("END OF GAME")
+                    if i == 1:          #player 2 AI
+                        print(f"PLAYER {i+1}'S GO:")    
+                        done = True
+                        print(Moves.allPlayers[1].playerNumber)
+                    elif i == 2:        #player 3 AI
+                        print(f"PLAYER {i+1}'S GO:")    
+                        done = True
+                        print(Moves.allPlayers[2].playerNumber)
+                    else:               #player 4 AI
+                        print(f"PLAYER {i+1}'S GO:")    
+                        done = True
+                        print(Moves.allPlayers[3].playerNumber)
+                        
+            else:
+                print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
+                skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to the next players turn
+                done = True
+    print("END OF GAME")
 
-    
+
+choice = int(input("do you want to play single player (1)or multiplayer (2)"))
+if choice == 1:
+    if __name__ == "__main__":
+        main(Moves,discardPile,Card,Stack,Player,table,virtualTable)
+else:
+    import test1
