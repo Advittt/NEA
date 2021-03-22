@@ -159,6 +159,8 @@ class Moves:
             return "help"                   
         elif Items[0] == "draw" and (Items[1] == "deck" or Items[1] == "discard"):
             return "draw"
+        elif Items[0] == "discard":
+            return "discard"
         elif Items[0] == "swap" and (Items[1] == "card" or Items[1] == "cards"):
             return "swap"
         elif Items[0] == "play" and (Items[1] == "7" or Items[1] == "8"):
@@ -190,14 +192,21 @@ class Moves:
                 newCard = Moves.pickUpNewCardFromDiscardPile(discardPile)       #picks random card from discard pile
             print(f"card drawn:", displayCardToPlayer(newCard))             
             return newCard
+    def discard(self, Items,discardPile,newCard):
+        discardPile.append(newCard)
+        print(discardPile)
+        newCard = None
     def swapCommand(self, Items, newCard, discardPile,i):
         if Items[1] == "card":
             Moves.swapNewCardWithOld(newCard, Moves.allPlayers[i].cards, discardPile)
         else:
             Moves.swapMultipleCardsWithTheDeck(newCard, Moves.allPlayers[i].cards, discardPile,i)
 
-    def gandalfCommand(self, Items):
-            print("NEED TO MAKE")
+    def gandalfCommand(self, allowed):
+        if allowed == 0:    #if this is their first command, then they can call gandalf
+            return True
+        else:
+            return False
 
 def createTable(table,p1,p2,p3,p4):         #creates table to store actual values of cards nd positions
     for i in range (4):
@@ -311,19 +320,18 @@ Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the param
 
 skip = False            # for queen
 Gandalf = False
+for d in range (3):                                                                                     #set AI player difficulties
+    D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
+    1 = easy
+    2 = medium
+    3 = hard
+    """)
+    Moves.allPlayers[d+1].difficulty = D
+    print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
+
 while Gandalf == False:
     for i in range (4):
-        if skip == False:
-
-            for d in range (3):                                                                                     #set AI player difficulties
-                D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
-                1 = easy
-                2 = medium
-                3 = hard
-                """)
-                Moves.allPlayers[d+1].difficulty = D
-                print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
-            
+        if skip == False:        
             print(" \n")
             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)  #create the table with actual cards
             displayTable(table)
@@ -335,6 +343,7 @@ while Gandalf == False:
             print("**************")
             print(f"PLAYER {i+1}'S GO:")
             print("**************\n")
+            callGandalfChecker = 0
             drawACardChances = 0
             done = False
             while done == False:
@@ -345,33 +354,72 @@ while Gandalf == False:
                         Items = []                                      #splits commands up
                         Items = C.split(" ")
                     ValidCommand = Moves.CheckCommandIsValid(Items)        #check if valid 
+
                     if ValidCommand == "notValid":
                         print("Invalid command")
+
                     elif ValidCommand == "SLAP":
                         Moves.slapCommand(Items)
+
                     elif ValidCommand == "help":
                         help()
+
                     elif ValidCommand == "draw":
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                         drawACardChances += 1
+                        callGandalfChecker += 1
+
+                    elif ValidCommand == "discard":
+                        Moves.discard(Items,discardPile, newCard)        #discard card drawn
+                        drawACardChances += 1
+                        callGandalfChecker += 1
+
                     elif ValidCommand == "swap":
                         Moves.swapCommand(Items,newCard, discardPile,i)
                         table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
                         displayTable(table)
                         virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                        displayTable(virtualTable)   
+                        displayTable(virtualTable)
+                        callGandalfChecker += 1
+
                     elif ValidCommand == "lookAtOwn":
                         Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
+                        callGandalfChecker += 1
+
                     elif ValidCommand == "lookAtSomoneElses":
                         Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
+                        callGandalfChecker += 1
+
                     elif ValidCommand == "Jack":
                         Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
                         table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
                         displayTable(table)
                         virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                         displayTable(virtualTable)
+                        callGandalfChecker += 1
+
                     elif ValidCommand == "Queen":
                         skip = Moves.skip(newCard, i)                   #skip a go - Queen
+                        callGandalfChecker += 1
+
+                    elif ValidCommand == "gandalf":
+                        Gandalf = Moves.gandalfCommand(callGandalfChecker)                   #Gandalf - end game
+                        if Gandalf == True:
+                            done = True             #go finished
+                            i = i+1
+                            print("TABLE AT END OF TURN")
+                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                            displayTable(table)
+                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                            displayTable(virtualTable)
+                            discardPile.reverse()       #correct the order
+                            if len(discardPile) !=0:
+                                print(f"discard pile: {discardPile[0]}")  
+                            Commands.clear()
+                        else:
+                            print("cannot call gandalf")
+                            print("you can only call gandalf at the beginning of your round")
+
                     elif ValidCommand == "done":
                         done = True             #go finished
                         i = i+1
@@ -401,5 +449,6 @@ while Gandalf == False:
             print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
             skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to the next players turn
             done = True
+print("END OF GAME")
 
     
