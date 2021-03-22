@@ -73,14 +73,14 @@ class Moves:
                 cardsSwapping.append(12)
             else:      
                 cardsSwapping.append(int(cards[a][0]))                              #stores the value of the cards
-        if round(np.power(np.prod(cardsSwapping), 1/len(cardsSwapping)),10) == float(cardsSwapping[0]):      #checks if all the cards have the same valu by multpilying them all and then finding the nth root using numpy
+        if round(np.power(np.prod(cardsSwapping), 1/len(cardsSwapping)),10) == float(cardsSwapping[0]):      #checks if all the cards have the same value by multpilying them all and then finding the nth root using numpy
             for i in range(x):
                 discardPile.append(cards[i])                #discards the cards and formats the (virtual)table
-                cards[i] = " "
+                Moves.allPlayers[counter].cards[i] = " "
             
             cardPosition = (", ".join(cardPosition))            #gets rid of []
             y = int(input(f"which position would you like to add the new card to {cardPosition}: ")) -1
-            cards[y] = newCard
+            Moves.allPlayers[counter].cards[y] = newCard
             print(f"you have added the new card to position {y + 1}")           #put the new card in the position requested 
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
@@ -314,6 +314,9 @@ p1 = Player(1,c1,0,0,0)
 p2 = Player(2,c2,0,0,0)
 p3 = Player(3,c3,0,0,0)
 p4 = Player(4,c4,0,0,0)
+p1.cards[0] = (10, "clubs")
+p1.cards[1] = (10, "diamonds")
+p1.cards[2] = (10, "spades")
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 
@@ -429,7 +432,8 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
                             discardPile.reverse()       #correct the order
-                            print(f"discard pile: {discardPile[0]}")                   
+                            if len(discardPile) !=0:
+                                print(f"discard pile: {discardPile[0]}")                   
                         Commands.clear()
                     
                     if i == 1:          #player 2 AI
