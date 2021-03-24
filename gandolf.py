@@ -58,30 +58,40 @@ class Moves:
     
     def swapMultipleCardsWithTheDeck(self, newCard, cards, discardPile,counter):                  #swap multiple cards with deck
         x = int(input("how many of your cards do you want to swap (2,3,4)"))
-        cardsSwapping = []
-        cardPosition = []                               
+        cardsSwapping = []              #cardsSwapping holds the value of the card and cardsSwapping1 holds the card as tuple
+        cardsSwapping1 = []
+        cardPosition = []           #cardPosition holds the postion of the players cards as a string and cardPosition1 as an integer
+        cardPosition1 = []                                
         for i in range(x):
             a = int(input("which card do you want to swap (1,2,3,4)")) -1       
             cardPosition.append(str(a + 1))                                     #stores the position of the cards they want to store
+            cardPosition1.append(a)
             if cards[a][0] == "Ace":
+                cardsSwapping1.append(("Ace",cards[a][1]))          #convert AJQK into its number value and store in list cardsSwapping. the tuple itself is stored in cardsSwapping1
                 cardsSwapping.append(1)
             elif cards[a][0] == "Jack":
                 cardsSwapping.append(11)
+                cardsSwapping1.append(("Jack",cards[a][1]))
             elif cards[a][0] == "Queen":
                 cardsSwapping.append(12)
+                cardsSwapping1.append(("Queen",cards[a][1]))
             elif cards[a][0] == "King":
-                cardsSwapping.append(12)
-            else:      
-                cardsSwapping.append(int(cards[a][0]))                              #stores the value of the cards
+                cardsSwapping.append(13)
+                cardsSwapping1.append(("King",cards[a][1]))
+            else:
+                cardsSwapping.append(int(cards[a][0]))       
+                cardsSwapping1.append([int(cards[a][0]),cards[a][1]])                             #stores the value of the cards
         if round(np.power(np.prod(cardsSwapping), 1/len(cardsSwapping)),10) == float(cardsSwapping[0]):      #checks if all the cards have the same value by multpilying them all and then finding the nth root using numpy
-            for i in range(x):
-                discardPile.append(cards[i])                #discards the cards and formats the (virtual)table
-                Moves.allPlayers[counter].cards[i] = " "
+            for i in range (x):
+                Moves.discard(discardPile, cardsSwapping1[i]) #discard the players card
+            for j in cardPosition1:
+                cards[j] = " "              #remove players card from their hand
             
             cardPosition = (", ".join(cardPosition))            #gets rid of []
             y = int(input(f"which position would you like to add the new card to {cardPosition}: ")) -1
             Moves.allPlayers[counter].cards[y] = newCard
             print(f"you have added the new card to position {y + 1}")           #put the new card in the position requested 
+
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
             print("you have made a mistake")
@@ -192,10 +202,9 @@ class Moves:
                 newCard = Moves.pickUpNewCardFromDiscardPile(discardPile)       #picks random card from discard pile
             print(f"card drawn:", displayCardToPlayer(newCard))             
             return newCard
-    def discard(self, Items,discardPile,newCard):
+    def discard(self,discardPile,newCard):
         discardPile.append(newCard)
-        print(discardPile)
-        newCard = None
+        return None
     def swapCommand(self, Items, newCard, discardPile,i):
         if Items[1] == "card":
             Moves.swapNewCardWithOld(newCard, Moves.allPlayers[i].cards, discardPile)
@@ -231,15 +240,15 @@ def createVirtualTable(table,p1,p2,p3,p4):      #creates virutal table with just
             Vp1[i] = " "
         virtualTable[5][i+1] = Vp1[i]           
     for i in range (4):
-        if p2[i]== "":
+        if p2[i]== " ":
             Vp2[i] = " "
         virtualTable[i+1][0] = Vp2[i]
     for i in range (4):
-        if p3[i]== "":
+        if p3[i]== " ":
             Vp3[i] = " "
         virtualTable[0][i+1] = Vp3[i]
     for i in range (4):
-        if p4[i]== "":
+        if p4[i]== " ":
             Vp4[i] = " "
         virtualTable[i+1][5] = Vp4[i] 
 
@@ -314,9 +323,7 @@ p1 = Player(1,c1,0,0,0)
 p2 = Player(2,c2,0,0,0)
 p3 = Player(3,c3,0,0,0)
 p4 = Player(4,c4,0,0,0)
-p1.cards[0] = (10, "clubs")
-p1.cards[1] = (10, "diamonds")
-p1.cards[2] = (10, "spades")
+
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
 
@@ -373,7 +380,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             callGandalfChecker += 1
 
                         elif ValidCommand == "discard":
-                            Moves.discard(Items,discardPile, newCard)        #discard card drawn
+                            newCard = Moves.discard(discardPile, newCard)        #discard card drawn
                             drawACardChances += 1
                             callGandalfChecker += 1
 
@@ -415,7 +422,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                                 displayTable(table)
                                 virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                                 displayTable(virtualTable)
-                                discardPile.reverse()       #correct the order
+                                #discardPile.reverse()       #correct the order
                                 if len(discardPile) !=0:
                                     print(f"discard pile: {discardPile[0]}")  
                                 Commands.clear()
@@ -431,9 +438,9 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             displayTable(table)
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
-                            discardPile.reverse()       #correct the order
+                            #discardPile.reverse()       #correct the order
                             if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile[0]}")                   
+                                print(f"discard pile: {discardPile}")                   
                         Commands.clear()
                     
                     if i == 1:          #player 2 AI
