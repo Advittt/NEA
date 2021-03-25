@@ -323,6 +323,7 @@ for i in range (0,4):
     c3.append(deck.pop())
     c4.append(deck.pop())
 
+
 discardPile = []
 p1 = Player(1,c1,0,0,0)
 p2 = Player(2,c2,0,0,0)
@@ -362,7 +363,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                 drawACardChances = 0
                 done = False
                 while done == False:
-                    while i == 0: 
+                    while i == 0:
                         Commands = []
                         Commands.append(input(f"Enter command: ").lower())
                         for C in Commands:
@@ -380,6 +381,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             help()
 
                         elif ValidCommand == "draw":
+                            #Items = ["draw","deck"] dont know y this is here
                             newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                             drawACardChances += 1
                             callGandalfChecker += 1
@@ -473,7 +475,28 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                         Commands.clear()
                     
                     if i == 1:          #player 2 AI
-                        print(f"PLAYER {i+1}'S GO:")    
+                        print(f"PLAYER {i+1}'S GO:")
+                        tempCards = []
+                        Items = ["draw","deck"]
+                        drawACardChances = 0
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
+                        for i in range (4):
+                            if Moves.allPlayers[1].cards[i][0] == "Ace":
+                                tempCards.append((1,i))
+                            elif Moves.allPlayers[1].cards[i][0] == "Jack":
+                                tempCards.append((11,i))
+                            elif Moves.allPlayers[1].cards[i][0] == "Queen":
+                                tempCards.append((12,i))
+                            elif Moves.allPlayers[1].cards[i][0] == "King":
+                                tempCards.append((13,i))
+                            else:
+                                tempCards.append((int(Moves.allPlayers[1].cards[i][0]),i))  #the tempCards holds the (cardsValue,cardsPosition) as a list
+                        def getKey(item):
+                            return item[0]
+                        tempCards = sorted(tempCards, key=getKey)           #sorts the tempCards by their value, lowest to highest
+                        if tempCards[3][0] > int(newCard[0]):               #if the last cards value is greater than the new card, swap the cards
+                            Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
+                            newCard = Moves.discard(discardPile ,newCard)
                         done = True
                         print(Moves.allPlayers[1].playerNumber)
                     elif i == 2:        #player 3 AI
