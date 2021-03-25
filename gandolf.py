@@ -299,6 +299,7 @@ tempDeck = [Card(value, color) for value in range(1, 14) for color in colors]   
 
 suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
 x = []
+
 deck = Stack()
 for i in range(0,52):
     if tempDeck[i].value >= 11 or tempDeck[i].value == 1:                       #if the vale is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
@@ -317,14 +318,10 @@ c2 = []
 c3 = []
 c4 = []
 for i in range (0,4):
-    c1.append(deck.peek(i))
-    deck.pop()
-    c2.append(deck.peek(i))
-    deck.pop()
-    c3.append(deck.peek(i))
-    deck.pop()
-    c4.append(deck.peek(i))
-    deck.pop()
+    c1.append(deck.pop())
+    c2.append(deck.pop())
+    c3.append(deck.pop())
+    c4.append(deck.pop())
 
 discardPile = []
 p1 = Player(1,c1,0,0,0)
