@@ -106,7 +106,7 @@ class Moves:
             position = position -1
             print(displayCardToPlayer(cards[position]))
             discardPile.append(newCard)
-            newCard = None
+            return (None,None)
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
             print("you have made a mistake")
@@ -123,7 +123,7 @@ class Moves:
             position = int(input("which card would you like to look at (1,2,3,4): ")) -1
             print(displayCardToPlayer(Moves.allPlayers[playerNumber -1].cards[position]))
             discardPile.append(newCard)
-            newCard = None
+            return (None,None)
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
             print("you have made a mistake")
@@ -143,7 +143,7 @@ class Moves:
             Moves.allPlayers[counter].cards[ownCard] = Moves.allPlayers[playerNumber].cards[position]
             Moves.allPlayers[playerNumber].cards[position] = temp
             discardPile.append(newCard)
-            newCard = None
+            return (None,None)
 
         else:
             Moves.allPlayers[counter].mistakeCounter += 5
@@ -151,11 +151,10 @@ class Moves:
             print("5 penalty points added")
             print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
 
-    def skip(self,newCard, counter):
+    def skip(self,newCard):
             if newCard[0] == "Queen":                                                #queen - skip go
                 discardPile.append(newCard)
-                newCard = None
-                return True
+                return True, (None,None)
             else:
                 Moves.allPlayers[counter].mistakeCounter += 5
                 print("you have made a mistake")
@@ -202,9 +201,17 @@ class Moves:
                 newCard = Moves.pickUpNewCardFromDiscardPile(discardPile)       #picks random card from discard pile
             print(f"card drawn:", displayCardToPlayer(newCard))             
             return newCard
-    def discard(self,discardPile,newCard):
+
+    def discard(self,discardPile,newCard):  #adds new card to discardPile
         discardPile.append(newCard)
-        return None
+        return (None,None)
+
+    def newCardUsed(self,newCard):  #check if new card has already been used. stops repeating turns
+        if newCard[0] == None:
+            return True
+        else:
+            return False
+
     def swapCommand(self, Items, newCard, discardPile,i):
         if Items[1] == "card":
             Moves.swapNewCardWithOld(newCard, Moves.allPlayers[i].cards, discardPile)
@@ -259,7 +266,8 @@ def displayTable(table):
         for elem in row:
             print(elem, end=' ')        # this is how you display 2d arrays
         print()
-    
+
+
 
 def displayCardToPlayer(card):
     return (f"the {card[0]} of {card[1]}")          #displays cards in user readable/friendly way
@@ -380,37 +388,59 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             callGandalfChecker += 1
 
                         elif ValidCommand == "discard":
-                            newCard = Moves.discard(discardPile, newCard)        #discard card drawn
-                            drawACardChances += 1
-                            callGandalfChecker += 1
+                            if Moves.newCardUsed(newCard) == False:                 #if the new card has already been used, dont do the following command
+                                newCard = Moves.discard(discardPile, newCard)        #e.g. do not append (Non,None to discardPile)#discard card drawn
+                                drawACardChances += 1                               #discard card drawn
+                                callGandalfChecker += 1
+                            else:
+                                print("you have already used your card")
 
                         elif ValidCommand == "swap":
-                            Moves.swapCommand(Items,newCard, discardPile,i)
-                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                            displayTable(table)
-                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                            displayTable(virtualTable)
-                            callGandalfChecker += 1
+                            if Moves.newCardUsed(newCard) == False:
+                                Moves.swapCommand(Items,newCard, discardPile,i)
+                                table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                                displayTable(table)
+                                virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                                displayTable(virtualTable)
+                                callGandalfChecker += 1
+                            else:
+                                print("you have already used your card")
 
                         elif ValidCommand == "lookAtOwn":
-                            Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
-                            callGandalfChecker += 1
+                            if Moves.newCardUsed(newCard) == False:
+                                newCard = Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
+                                callGandalfChecker += 1
+                            else:
+                                print("you have already used your card")
+
 
                         elif ValidCommand == "lookAtSomoneElses":
-                            Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
-                            callGandalfChecker += 1
+                            if Moves.newCardUsed(newCard) == False:
+                                newCard = Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
+                                callGandalfChecker += 1
+                            else:
+                                print("you have already used your card")
+
 
                         elif ValidCommand == "Jack":
-                            Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
-                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                            displayTable(table)
-                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
-                            displayTable(virtualTable)
-                            callGandalfChecker += 1
+                            if Moves.newCardUsed(newCard) == False:
+                                newCard = Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
+                                table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                                displayTable(table)
+                                virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                                displayTable(virtualTable)
+                                callGandalfChecker += 1
+                            else:
+                                print("you have already used your card")
 
-                        elif ValidCommand == "Queen":
-                            skip = Moves.skip(newCard, i)                   #skip a go - Queen
-                            callGandalfChecker += 1
+                        elif ValidCommand == "Queen": 
+                            if Moves.newCardUsed(newCard) == False:
+                                a = Moves.skip(newCard)                   #skip a go - Queen
+                                skip = a[0]
+                                newCard = a[1]
+                                callGandalfChecker += 1
+                            else:
+                                print("you have already used your card")
 
                         elif ValidCommand == "gandalf":
                             Gandalf = Moves.gandalfCommand(callGandalfChecker)                   #Gandalf - end game
@@ -431,6 +461,8 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                                 print("you can only call gandalf at the beginning of your round")
 
                         elif ValidCommand == "done":
+                            if Moves.newCardUsed(newCard) == False:         #if they have not used their card yet, then disard it for them
+                                Moves.discard(discardPile, newCard)
                             done = True             #go finished
                             i = i+1
                             print("TABLE AT END OF TURN")
