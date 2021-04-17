@@ -2,7 +2,7 @@ import random
 from random import shuffle
 import numpy as np
 from collections import deque
-
+import time
 
 class Card:
     def __init__(self, value, color):
@@ -21,13 +21,18 @@ class Stack:
     def size(self):
         return len(self.deck)
 
-class Player:
-    def __init__(self, playerNumber, cards, totalPoints, mistakeCounter, difficulty):
+class Player:               #parent class for humans
+    def __init__(self, playerNumber, cards, totalPoints, mistakeCounter,difficulty):
         self.playerNumber = playerNumber
         self.cards = cards
         self.totalPoints = totalPoints
         self.mistakeCounter = mistakeCounter
         self.difficulty = difficulty
+
+class AIPlayer(Player):         # AI child class
+    def __init__(self, playerNumber, cards, totalPoints, mistakeCounter, difficulty, playersCardsDictionary):
+        super().__init__(playerNumber, cards, totalPoints, mistakeCounter,difficulty)
+        self.playersCardsDictionary = playersCardsDictionary
 
 class Moves:
     def __init__(self,deck,p1,p2,p3,p4,discardPile):
@@ -38,7 +43,10 @@ class Moves:
         self.p4 = p4
         self.allPlayers = [p1,p2,p3,p4]     #use this for selecting players
         self.discardPile = discardPile
-
+    
+    def lookAtCardsStartofRound(self, cards, card1, card2):
+        return[(cards[card1]),(cards[card2])]
+        
     def pickUpNewCardFromDeck(self, deck):                      #pick up card from deck
         newCard = deck.pop()
         return newCard
@@ -100,35 +108,48 @@ class Moves:
     
     
 
-    def lookAtOwnCard(self, cards, newCard, counter):
-        if newCard[0] == "7" or newCard[0] == "8" :                                        #7/8 - look at own card
-            position = int(input("which card would you like to look at (1,2,3,4): "))
-            position = position -1
-            print(displayCardToPlayer(cards[position]))
-            discardPile.append(newCard)
-            return (None,None)
+    def lookAtOwnCard(self, cards, newCard, counter, playerDifficulty, AIChoice):
+        if playerDifficulty == 0:                   #check if you are a human or AI
+            if newCard[0] == "7" or newCard[0] == "8" :                                        #7/8 - look at own card
+                position = int(input("which card would you like to look at (1,2,3,4): "))
+                position = position -1
+                print(displayCardToPlayer(cards[position]))
+                discardPile.append(newCard)
+                return (None,None)
+            else:
+                Moves.allPlayers[counter].mistakeCounter += 5
+                print("you have made a mistake")
+                print("5 penalty points added")
+                print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
         else:
-            Moves.allPlayers[counter].mistakeCounter += 5
-            print("you have made a mistake")
-            print("5 penalty points added")
-            print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
+            discardPile.append(newCard)
+            return([Moves.allPlayers[counter].cards[AIChoice],(None,None)])
+
 
     
-    def lookAtSomeoneElsesCard(self, newCard, counter):
-        if newCard[0] == "9" or newCard[0] == "10":                                                     #9/10 - look at somone elses card
-            playerNumberList = ["1","2","3","4"]
-            playerNumberList.pop(counter)
-            playerNumberList = (", ".join(playerNumberList))            #gets rid of []
-            playerNumber = int(input(f"which players card would you like to look at {playerNumberList}: "))
-            position = int(input("which card would you like to look at (1,2,3,4): ")) -1
-            print(displayCardToPlayer(Moves.allPlayers[playerNumber -1].cards[position]))
-            discardPile.append(newCard)
-            return (None,None)
+    def lookAtSomeoneElsesCard(self, newCard, playerDifficulty, playerNumber, counter):
+        if playerDifficulty == 0:
+            if newCard[0] == "9" or newCard[0] == "10":                                                     #9/10 - look at somone elses card
+                playerNumberList = ["1","2","3","4"]
+                playerNumberList.pop(counter)
+                playerNumberList = (", ".join(playerNumberList))            #gets rid of []
+                playerNumber = int(input(f"which players card would you like to look at {playerNumberList}: "))
+                position = int(input("which card would you like to look at (1,2,3,4): ")) -1
+                print(displayCardToPlayer(Moves.allPlayers[playerNumber -1].cards[position]))
+                discardPile.append(newCard)
+                return (None,None)
+            else:
+                Moves.allPlayers[counter].mistakeCounter += 5
+                print("you have made a mistake")
+                print("5 penalty points added")
+                print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
         else:
-            Moves.allPlayers[counter].mistakeCounter += 5
-            print("you have made a mistake")
-            print("5 penalty points added")
-            print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
+            discardPile.append(newCard)     #AIs version
+            playerNumberList = [1,2,3,4]
+            playerNumberList.pop(counter)
+            playerNumber = random.choice(playerNumberList)
+            position = random.randint(0,3)
+            return([playerNumber, position, Moves.allPlayers[playerNumber -1].cards[position]])            
 
     def swapWithSomoneElse(self,newCard, counter, discardPile):
         if newCard[0] == "Jack":                                                #jack - swap cards
@@ -152,7 +173,7 @@ class Moves:
             print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
 
     def skip(self,newCard):
-            if newCard[0] == "Queen":                                                #queen - skip go
+            if newCard[0] == "Queen":                                                #queen - skip go # AI share this method
                 discardPile.append(newCard)
                 return True, (None,None)
             else:
@@ -186,6 +207,7 @@ class Moves:
             return "done"                    
         else:
             return "notValid"
+    
         
     def slapCommand(self, Items):
         print("NEED TO MAKE")
@@ -325,10 +347,25 @@ for i in range (0,4):
 
 
 discardPile = []
+
+P2playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},       #hash dictionaries to store known players cards
+                            "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                            "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+
+P3playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                            "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                            "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+
+P4playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                            "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                            "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+
+
+
 p1 = Player(1,c1,0,0,0)
-p2 = Player(2,c2,0,0,0)
-p3 = Player(3,c3,0,0,0)
-p4 = Player(4,c4,0,0,0)
+p2 = AIPlayer(2,c2,0,0,0,P2playersCards)
+p3 = AIPlayer(3,c3,0,0,0,P3playersCards)
+p4 = AIPlayer(4,c4,0,0,0,P4playersCards)
 
 
 Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
@@ -344,8 +381,9 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
         """)
         Moves.allPlayers[d+1].difficulty = D
         print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
-
+    Round = 0
     while Gandalf == False:
+        Round = Round +1
         for i in range (4):
             if skip == False:        
                 print(" \n")
@@ -362,8 +400,18 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                 callGandalfChecker = 0
                 drawACardChances = 0
                 done = False
+                duringRound = 0
                 while done == False:
+                    duringRound = duringRound + 1
                     while i == 0:
+                        if Round == 1 and duringRound == 1:
+                            a = int(input("which cards would you like to look at: 1,2,3 or 4")) -1
+                            b = int(input("which cards would you like to look at: 1,2,3 or 4")) -1
+                            cardsChosen = Moves.lookAtCardsStartofRound(Moves.allPlayers[i].cards,a,b)
+                            print(displayCardToPlayer(cardsChosen[0]))
+                            print(displayCardToPlayer(cardsChosen[1]))
+                        duringRound = duringRound + 1
+
                         Commands = []
                         Commands.append(input(f"Enter command: ").lower())
                         for C in Commands:
@@ -407,7 +455,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
 
                         elif ValidCommand == "lookAtOwn":
                             if Moves.newCardUsed(newCard) == False:
-                                newCard = Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i)              #look at own card - 7/8 
+                                newCard = Moves.lookAtOwnCard(Moves.allPlayers[i].cards, newCard,i, Moves.allPlayers[i].difficulty,0)              #look at own card - 7/8 
                                 callGandalfChecker += 1
                             else:
                                 print("you have already used your card")
@@ -415,7 +463,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
 
                         elif ValidCommand == "lookAtSomoneElses":
                             if Moves.newCardUsed(newCard) == False:
-                                newCard = Moves.lookAtSomeoneElsesCard(newCard,i)               #used for showing somone elses card - 9/10
+                                newCard = Moves.lookAtSomeoneElsesCard(newCard, Moves.allPlayers[i].difficulty, Moves.allPlayers[i].playerNumber,i)               #used for showing somone elses card - 9/10
                                 callGandalfChecker += 1
                             else:
                                 print("you have already used your card")
@@ -463,7 +511,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             if Moves.newCardUsed(newCard) == False:         #if they have not used their card yet, then disard it for them
                                 Moves.discard(discardPile, newCard)
                             done = True             #go finished
-                            i = i+1
+                            i = 5
                             print("TABLE AT END OF TURN")
                             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
                             displayTable(table)
@@ -473,45 +521,125 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             if len(discardPile) !=0:
                                 print(f"discard pile: {discardPile}")                   
                         Commands.clear()
+
                     
-                    if i == 1:          #player 2 AI
-                        print(f"PLAYER {i+1}'S GO:")
+                    while i == 1:          #player 2 AI
+                        
+                        difficulty = Moves.allPlayers[i].difficulty            
+                        if Round == 1:
+                            knownCards = Moves.lookAtCardsStartofRound(p2.cards,0,1)
+                        print(f"known cards: {knownCards}")
                         tempCards = []
                         Items = ["draw","deck"]
                         drawACardChances = 0
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                        for i in range (4):
-                            if Moves.allPlayers[1].cards[i][0] == "Ace":
-                                tempCards.append((1,i))
-                            elif Moves.allPlayers[1].cards[i][0] == "Jack":
-                                tempCards.append((11,i))
-                            elif Moves.allPlayers[1].cards[i][0] == "Queen":
-                                tempCards.append((12,i))
-                            elif Moves.allPlayers[1].cards[i][0] == "King":
-                                tempCards.append((13,i))
-                            else:
-                                tempCards.append((int(Moves.allPlayers[1].cards[i][0]),i))  #the tempCards holds the (cardsValue,cardsPosition) as a list
-                        def getKey(item):
-                            return item[0]
-                        tempCards = sorted(tempCards, key=getKey)           #sorts the tempCards by their value, lowest to highest
-                        if tempCards[3][0] > int(newCard[0]):               #if the last cards value is greater than the new card, swap the cards
-                            Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
-                            newCard = Moves.discard(discardPile ,newCard)
-                        done = True
-                        print(Moves.allPlayers[1].playerNumber)
-                    elif i == 2:        #player 3 AI
-                        print(f"PLAYER {i+1}'S GO:")    
-                        done = True
-                        print(Moves.allPlayers[2].playerNumber)
-                    else:               #player 4 AI
-                        print(f"PLAYER {i+1}'S GO:")    
-                        done = True
-                        print(Moves.allPlayers[3].playerNumber)
+
+                        time.sleep(5)
+
+                        if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
+                            print(f"PLAYER 2 HAS PLAYED A {newCard[0]}")
+                            listOfCards = Moves.lookAtOwnCard(p2.cards, newCard, i, p2.playerNumber, 2)
+                            knownCards.append(listOfCards[0])
+                            newCard = listOfCards[1]
+                            time.sleep(5)
+
                         
+                        elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
+                            print(f"PLAYER 2 HAS PLAYED A {newCard[0]}")
+                            listOfCards = Moves.lookAtSomeoneElsesCard(newCard, Moves.allPlayers[i].difficulty, Moves.allPlayers[i].playerNumber, i)
+                            playerNumber = listOfCards[0]
+                            position = listOfCards[1]
+                            playerCard = listOfCards[2]
+
+                            if playerNumber == 1:
+                                playerNumber = "player1"
+                            elif playerNumber == 3:
+                                playerNumber = "player3"
+                            elif playerNumber == 4:
+                                playerNumber = "player4"
+                            if position == 0:
+                                position = "card1"
+                            elif position == 1:
+                                position = "card2"
+                            elif position == 2:
+                                position = "card2"
+                            else:
+                                position = "card4"
+                            Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            time.sleep(5)
+
+                        elif newCard[0] == "jack":      #need to learn how to read hashtable/dictionary 
+                            print("not finshed")
+                            Moves.discard(discardPile, newCard)
+                            time.sleep(5)
+                        
+                        elif newCard[0] == "Queen":     #miss a go
+                            print("PLAYER 2 HAS PLAYED A QUEEN")
+                            a = Moves.skip(newCard)
+                            skip = a[0]
+                            newCard = a[1]
+                            time.sleep(5)
+
+                        else:
+                            print("PLAYER 2 HAS SWAPPED A CARD")        #swap a card
+                            for i in range (4):
+                                if Moves.allPlayers[1].cards[i][0] == "Ace":
+                                    tempCards.append((1,i))
+                                elif Moves.allPlayers[1].cards[i][0] == "Jack":
+                                    tempCards.append((11,i))
+                                elif Moves.allPlayers[1].cards[i][0] == "Queen":
+                                    tempCards.append((12,i))
+                                elif Moves.allPlayers[1].cards[i][0] == "King":
+                                    tempCards.append((13,i))
+                                else:
+                                    tempCards.append((int(Moves.allPlayers[1].cards[i][0]),i))  #the tempCards holds the (cardsValue,cardsPosition) as a list
+                            def getKey(item):
+                                return item[0]
+                            tempCards = sorted(tempCards, key=getKey)           #sorts the tempCards by their value, lowest to highest
+
+                            tempNewCard = newCard[0]
+                            if newCard[0]== "Ace":
+                                tempNewCard = 1
+                            elif newCard[0]== "Jack":
+                                tempNewCard = 11
+                            elif newCard[0]== "Queen":
+                                tempNewCard = 12
+                            elif newCard[0]== "King":
+                                tempNewCard = 13
+
+                            if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
+                                Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
+                                newCard = Moves.discard(discardPile ,newCard)
+                            time.sleep(5)
+
+                        print(f"known cards: {knownCards}")
+
+                    
+                        print("TABLE AT END OF TURN")
+                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                        displayTable(table)
+                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                        displayTable(virtualTable)
+                        if len(discardPile) !=0:
+                            print(f"discard pile: {discardPile}")
+
+                        done = True             #go finished
+                        i = 5
+                        time.sleep(10)
+
+                    while i == 2:        #player 3 AI
+                        done = True
+                        i = 5
+                        
+                    while i == 3:               #player 4 AI
+                        done = True
+                        i = 5
+                    
             else:
                 print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
                 skip = False    #if queen is used to skip then when its the next players turn it will skip the whole code and go to the next players turn
                 done = True
+            
     print("END OF GAME")
 
 
