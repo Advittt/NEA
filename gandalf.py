@@ -493,7 +493,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             Gandalf = Moves.gandalfCommand(callGandalfChecker)                   #Gandalf - end game
                             if Gandalf == True:
                                 done = True             #go finished
-                                i = i+1
+                                i = 5
                                 print("TABLE AT END OF TURN")
                                 table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
                                 displayTable(table)
@@ -534,14 +534,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                         drawACardChances = 0
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
 
-                        time.sleep(5)
+                        #time.sleep(5)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
                             print(f"PLAYER 2 HAS PLAYED A {newCard[0]}")
                             listOfCards = Moves.lookAtOwnCard(p2.cards, newCard, i, p2.playerNumber, 2)
                             knownCards.append(listOfCards[0])
                             newCard = listOfCards[1]
-                            time.sleep(5)
+                            #time.sleep(5)
 
                         
                         elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
@@ -566,19 +566,19 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             else:
                                 position = "card4"
                             Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
-                            time.sleep(5)
+                            #time.sleep(5)
 
                         elif newCard[0] == "jack":      #need to learn how to read hashtable/dictionary 
                             print("not finshed")
                             Moves.discard(discardPile, newCard)
-                            time.sleep(5)
+                            #time.sleep(5)
                         
                         elif newCard[0] == "Queen":     #miss a go
                             print("PLAYER 2 HAS PLAYED A QUEEN")
                             a = Moves.skip(newCard)
                             skip = a[0]
                             newCard = a[1]
-                            time.sleep(5)
+                            #time.sleep(5)
 
                         else:
                             print("PLAYER 2 HAS SWAPPED A CARD")        #swap a card
@@ -610,7 +610,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
                                 Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
                                 newCard = Moves.discard(discardPile ,newCard)
-                            time.sleep(5)
+                            #time.sleep(5)
 
                         print(f"known cards: {knownCards}")
 
@@ -625,7 +625,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
 
                         done = True             #go finished
                         i = 5
-                        time.sleep(10)
+                        #time.sleep(10)
 
                     while i == 2:        #player 3 AI
                         done = True
@@ -642,6 +642,38 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
             
     print("END OF GAME")
 
+    orderList = []
+    print(Moves.allPlayers[0].cards)
+
+    for i in range (4):
+        x = int(len(Moves.allPlayers[i].cards)) 
+        for j in range (x):
+            if Moves.allPlayers[i].cards[j][0] == "Ace":
+                Moves.allPlayers[i].totalPoints =  Moves.allPlayers[i].totalPoints + 1
+            elif Moves.allPlayers[i].cards[j][0] == "Jack":
+                Moves.allPlayers[i].totalPoints =  Moves.allPlayers[i].totalPoints + 11
+            elif Moves.allPlayers[i].cards[j][0] == "Queen":
+                Moves.allPlayers[i].totalPoints =  Moves.allPlayers[i].totalPoints + 12
+            elif Moves.allPlayers[i].cards[j][0] == "King":
+                Moves.allPlayers[i].totalPoints =  Moves.allPlayers[i].totalPoints + 13
+            else:
+                Moves.allPlayers[i].totalPoints = Moves.allPlayers[i].totalPoints + int(Moves.allPlayers[i].cards[j][0])
+        orderList.append([Moves.allPlayers[i].totalPoints + Moves.allPlayers[i].mistakeCounter, i+1])
+
+    def getKey(item):
+        return item[0]
+    orderList = sorted(orderList, key=getKey)
+    
+    print("\n")
+    print("*****FINAL TABLE *****")
+    print("\n")
+    print( "POSITION| PLAYER NUMBER  |  VALUE OF CARDS | PENALTY POINTS | OVERALL SCORE |")
+    print(f"FIRST   |       {orderList[0][1]}        |        {orderList[0][0] - Moves.allPlayers[0].mistakeCounter}       |        {Moves.allPlayers[0].mistakeCounter}       |       {orderList[0][0]}      |")
+    print(f"SECOND  |       {orderList[1][1]}        |        {orderList[1][0] - Moves.allPlayers[0].mistakeCounter}       |        {Moves.allPlayers[0].mistakeCounter}       |       {orderList[1][0]}      |")
+    print(f"THIRD   |       {orderList[2][1]}        |        {orderList[2][0] - Moves.allPlayers[0].mistakeCounter}       |        {Moves.allPlayers[0].mistakeCounter}       |       {orderList[2][0]}      |")
+    print(f"FORUTH  |       {orderList[3][1]}        |        {orderList[3][0] - Moves.allPlayers[0].mistakeCounter}       |        {Moves.allPlayers[0].mistakeCounter}       |       {orderList[3][0]}      |")
+    
+    
 
 choice = int(input("do you want to play single player (1)or multiplayer (2)"))
 if choice == 1:
