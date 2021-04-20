@@ -1,0 +1,16 @@
+[('King', 'clubs'), ('9', 'heart'), ('King', 'heart'), ('Ace', 'spades'), ('2', 'diamonds'), ('King', 'spades'), ('Ace', 'clubs'), ('5', 'heart'), ('3', 'spades'), ('10', 'clubs'), ('Queen', 'heart'), ('2', 'clubs'), ('3', 'diamonds'), ('Queen', 'clubs'), ('8', 'spades'), ('6', 'heart'), ('8', 'diamonds'), ('9', 'clubs'), ('6', 'clubs'), ('7', 'spades'), ('4', 'heart'), ('4', 'clubs'), ('10', 'spades'), ('9', 'spades'), ('5', 'clubs'), ('10', 'diamonds'), ('3', 'heart'), ('2', 'heart'), ('7', 'clubs'), ('7', 'heart'), ('6', 'diamonds'), ('7', 'diamonds'), ('Queen', 'spades'), ('Jack', 'diamonds'), ('Ace', 'diamonds'), ('4', 'diamonds')]
+[]
+[('8', 'clubs'), ('9', 'diamonds'), ('4', 'spades'), ('King', 'diamonds')]
+[('Jack', 'clubs'), ('3', 'clubs'), ('Queen', 'diamonds'), ('6', 'spades')]
+[('Jack', 'heart'), ('10', 'heart'), ('Jack', 'spades'), ('5', 'spades')]
+[('8', 'heart'), ('Ace', 'heart'), ('2', 'spades'), ('5', 'diamonds')]
+0
+0
+0
+0
+1
+1
+1
+{'players': {'player1': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}, 'player3': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}, 'player4': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}}}
+{'players': {'player1': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}, 'player3': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}, 'player4': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}}}
+{'players': {'player1': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}, 'player3': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}, 'player4': {'card1': (None, None), 'card2': (None, None), 'card3': (None, None), 'card4': (None, None)}}}

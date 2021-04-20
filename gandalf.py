@@ -34,6 +34,7 @@ class AIPlayer(Player):         # AI child class
         super().__init__(playerNumber, cards, totalPoints, mistakeCounter,difficulty)
         self.playersCardsDictionary = playersCardsDictionary
 
+    
 class Moves:
     def __init__(self,deck,p1,p2,p3,p4,discardPile):
         self.deck = deck
@@ -204,7 +205,9 @@ class Moves:
         elif Items[0] == "gandalf":
             return "gandalf"
         elif Items[0] == "done":
-            return "done"                    
+            return "done" 
+        elif Items[0] == "save":
+            return "save"                 
         else:
             return "notValid"
     
@@ -310,77 +313,48 @@ def help():
 13)play queen = next player misses a go
 14)gandalf = you declare the final round of the game
 15)done = finsihed your go
+16) save
     """)
+def merge(left, right):     #merge sort algorithm with reccursion. this is used for sorting out the tuples and 2d arrays from lowest to highest
+        left_index, right_index = 0, 0
+        result = []
+        while left_index < len(left) and right_index < len(right):
+            if left[left_index] < right[right_index]:
+                result.append(left[left_index])
+                left_index += 1
+            else:
+                result.append(right[right_index])
+                right_index += 1
+
+        result += left[left_index:]
+        result += right[right_index:]
+        return result
+
+
+def merge_sort(array):
+    if len(array) <= 1:  # base case
+        return array
+
+    # divide array in half and merge sort recursively
+    half = len(array) // 2
+    left = merge_sort(array[:half])
+    right = merge_sort(array[half:])
+
+    return merge(left, right)
     
-rows, cols = (6,6) 
-table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
-virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
 
-colors = ['heart', 'diamonds', 'spades', 'clubs']
-tempDeck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
-
-suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
-x = []
-
-deck = Stack()
-for i in range(0,52):
-    if tempDeck[i].value >= 11 or tempDeck[i].value == 1:                       #if the vale is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
-        value = suits.get(tempDeck[i].value)
-        x.append((value, tempDeck[i].color))
-    else:
-        x.append((str(tempDeck[i].value), tempDeck[i].color))
-
-
-random.shuffle(x)            # shuffle deck
-for i in range (0,52):
-    deck.push(x[i])
-
-c1 = []
-c2 = []
-c3 = []
-c4 = []
-for i in range (0,4):
-    c1.append(deck.pop())
-    c2.append(deck.pop())
-    c3.append(deck.pop())
-    c4.append(deck.pop())
-
-
-discardPile = []
-
-P2playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},       #hash dictionaries to store known players cards
-                            "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                            "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
-
-P3playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                            "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                            "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
-
-P4playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                            "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                            "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
-
-
-
-p1 = Player(1,c1,0,0,0)
-p2 = AIPlayer(2,c2,0,0,0,P2playersCards)
-p3 = AIPlayer(3,c3,0,0,0,P3playersCards)
-p4 = AIPlayer(4,c4,0,0,0,P4playersCards)
-
-
-Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
-
-def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
+def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty):
     skip = False            # for queen
     Gandalf = False
-    for d in range (3):                                                                                     #set AI player difficulties
-        D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
-        1 = easy
-        2 = medium
-        3 = hard
-        """)
-        Moves.allPlayers[d+1].difficulty = D
-        print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
+    if preSetDifficulty == False:
+        for d in range (3):                                                                                     #set AI player difficulties
+            D = input(f"""what difficulty do you want player {Moves.allPlayers[d].playerNumber + 1} to have:
+            1 = easy
+            2 = medium
+            3 = hard
+            """)
+            Moves.allPlayers[d+1].difficulty = D
+            print(f"player {Moves.allPlayers[d].playerNumber+ 1} is set to {D} difficulty")
     Round = 0
     while Gandalf == False:
         Round = Round +1
@@ -519,7 +493,49 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                             displayTable(virtualTable)
                             #discardPile.reverse()       #correct the order
                             if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile}")                   
+                                print(f"discard pile: {discardPile}")
+
+                        elif ValidCommand == "save":
+                            newGameFileName = input("what do you want to save the game file as: ")
+                            f = open(f"{newGameFileName}.txt", "w")
+                            formatDeck = [] 
+                            for i in range (deck.size()):
+                                formatDeck.append(deck.peek(i))
+                            f.write(str(formatDeck))
+                            f.write("\n")
+                            f.write(str(discardPile))
+                            f.write("\n")
+                            f.write(str(p1.cards))
+                            f.write("\n")
+                            f.write(str(p2.cards))
+                            f.write("\n")
+                            f.write(str(p3.cards))
+                            f.write("\n")
+                            f.write(str(p4.cards))
+                            f.write("\n")
+                            f.write(str(p1.mistakeCounter))
+                            f.write("\n")
+                            f.write(str(p2.mistakeCounter))
+                            f.write("\n")
+                            f.write(str(p3.mistakeCounter))
+                            f.write("\n")
+                            f.write(str(p4.mistakeCounter))
+                            f.write("\n")
+                            f.write(str(p2.difficulty))
+                            f.write("\n")
+                            f.write(str(p3.difficulty))
+                            f.write("\n")
+                            f.write(str(p4.difficulty))
+                            f.write("\n")
+                            f.write(str(p2.playersCardsDictionary))
+                            f.write("\n")
+                            f.write(str(p3.playersCardsDictionary))
+                            f.write("\n")
+                            f.write(str(p4.playersCardsDictionary))
+                            f.close()          
+
+                            print("the game has been saved. Goodbye")
+                            break      
                         Commands.clear()
 
                     
@@ -593,9 +609,9 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                                     tempCards.append((13,i))
                                 else:
                                     tempCards.append((int(Moves.allPlayers[1].cards[i][0]),i))  #the tempCards holds the (cardsValue,cardsPosition) as a list
-                            def getKey(item):
-                                return item[0]
-                            tempCards = sorted(tempCards, key=getKey)           #sorts the tempCards by their value, lowest to highest
+                            
+                            tempCards = merge_sort(tempCards) #sorts the tempCards by their value, lowest to highest
+                                      
 
                             tempNewCard = newCard[0]
                             if newCard[0]== "Ace":
@@ -660,10 +676,10 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
                 Moves.allPlayers[i].totalPoints = Moves.allPlayers[i].totalPoints + int(Moves.allPlayers[i].cards[j][0])
         orderList.append([Moves.allPlayers[i].totalPoints + Moves.allPlayers[i].mistakeCounter, i+1])
 
-    def getKey(item):
-        return item[0]
-    orderList = sorted(orderList, key=getKey)
-    
+
+    orderList = merge_sort(orderList)
+   
+
     print("\n")
     print("*****FINAL TABLE *****")
     print("\n")
@@ -677,7 +693,112 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable):
 
 choice = int(input("do you want to play single player (1)or multiplayer (2)"))
 if choice == 1:
-    if __name__ == "__main__":
-        main(Moves,discardPile,Card,Stack,Player,table,virtualTable)
+    loadGame = input("do you want to load a previous games?")
+    if loadGame == "yes":
+        gameFile = input("what is the file name of the game you want to load: ")
+        print(f"loading {gameFile}...")
+        with open(f'{gameFile}.txt') as f:
+            tempDeck = eval(f.readline())
+            discardPile = eval(f.readline())
+            c1 = eval(f.readline())
+            c2 = eval(f.readline())
+            c3 = eval(f.readline())
+            c4 = eval(f.readline())
+            p1m = int(f.readline())
+            p2m = int(f.readline())
+            p3m = int(f.readline())
+            p4m = int(f.readline())
+            p2d = int(f.readline())
+            p3d = int(f.readline())
+            p4d = int(f.readline())
+            temp2 = f.readline()
+            P2playersCards = eval(temp2)
+            temp3 = f.readline()
+            P3playersCards = eval(temp3)
+            temp4 = f.readline()
+            P4playersCards = eval(temp4)
+
+
+        
+        deck = Stack()
+        for i in range (len(tempDeck)):
+            deck.push(tempDeck[i])
+
+        
+        p1 = Player(1,c1,0,p1m,0)
+        p2 = AIPlayer(2,c2,0,p2m,p2d,P2playersCards)
+        p3 = AIPlayer(3,c3,0,p3m,p3d,P3playersCards)
+        p4 = AIPlayer(4,c4,0,p4m,p4d,P4playersCards)
+
+        rows, cols = (6,6) 
+        table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
+        virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
+
+
+        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
+        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
+
+        Moves = Moves(deck,p1,p2,p3,p4,discardPile)
+        main(Moves,discardPile,Card,Stack,Player,table,virtualTable,True)
+
+    else:
+        
+        if __name__ == "__main__":
+            rows, cols = (6,6) 
+            table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
+            virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
+
+            colors = ['heart', 'diamonds', 'spades', 'clubs']
+            tempDeck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
+
+            suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
+            x = []
+
+            deck = Stack()
+            for i in range(0,52):
+                if tempDeck[i].value >= 11 or tempDeck[i].value == 1:                       #if the value is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
+                    value = suits.get(tempDeck[i].value)
+                    x.append((value, tempDeck[i].color))
+                else:
+                    x.append((str(tempDeck[i].value), tempDeck[i].color))
+
+
+            random.shuffle(x)            # shuffle deck
+            for i in range (0,52):
+                deck.push(x[i])
+
+            c1 = []
+            c2 = []
+            c3 = []
+            c4 = []
+            for i in range (0,4):
+                c1.append(deck.pop())
+                c2.append(deck.pop())
+                c3.append(deck.pop())
+                c4.append(deck.pop())
+
+
+            discardPile = []
+
+            P2playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},       #hash dictionaries to store known players cards
+                                        "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                        "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+
+            P3playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                        "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                        "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+
+            P4playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                        "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                        "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+
+            p1 = Player(1,c1,0,0,0)
+            p2 = AIPlayer(2,c2,0,0,0,P2playersCards)
+            p3 = AIPlayer(3,c3,0,0,0,P3playersCards)
+            p4 = AIPlayer(4,c4,0,0,0,P4playersCards)
+
+            Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
+            main(Moves,discardPile,Card,Stack,Player,table,virtualTable,False)
 else:
     import test1
+
