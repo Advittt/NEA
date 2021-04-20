@@ -120,7 +120,9 @@ for row in createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards):
         print(elem, end=' ')
     print()
 
-Moves = Moves(deck,c1,discardPile)
+
+Moves = Moves(deck,Player,discardPile)
+print(Moves.cards)
 newCard = Moves.pickUpNewCardFromDeck(deck)
 print("card drawn:", newCard)
 option = input(("would you like to swap cards with:", newCard))

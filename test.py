@@ -1,21 +1,17 @@
-import random
-from random import shuffle
-import numpy
+import xml.etree.ElementTree as ET
+import lxml
 
-class Card:
-    def __init__(self, value, color):
-        self.value = value
-        self.color = color
+myTree = ET.parse("XMLtest1.xml")
+myRoot = myTree.getroot()
+print(myRoot[0].attrib)
+for x in myRoot[0]:
+    print(x.tag,x.attrib)
+for x in myRoot[0]:
+    c1 = (x.text)
 
-colors = ['heart', 'diamonds', 'spades', 'clubs']
-Deck = [Card(value, color) for value in range(1, 14) for color in colors]
+root = XMLtest1.etree.fromstring(xml)
+c1 = root.xpath('//c1/cardList/text()')        
+print(c1)
 
-deck = []
-for i in range(0,51):
-    deck.append((Deck[i].value, Deck[i].color))
 
-random.shuffle(deck)
-
-c1 = [deck[i] for i in range (0,4)]
-print(c1[0])
 
