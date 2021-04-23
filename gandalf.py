@@ -205,7 +205,9 @@ class Moves:
         elif Items[0] == "gandalf":
             return "gandalf"
         elif Items[0] == "done":
-            return "done" 
+            return "done"
+        elif Items[0] == "quit":
+            return "quit"
         elif Items[0] == "save":
             return "save"                 
         else:
@@ -301,7 +303,7 @@ def help():
     print("""VALID COMMANDS:
     
 1)SLAP
-2)draw deck card= draw a card from the deck
+2)draw deck = draw a card from the deck
 3)draw discard = draw a card from the discard
 6)swap card = swap one of your cards with the new card drawn
 7)swap cards = swap multpile of the same value cards with the new card drawn
@@ -313,7 +315,8 @@ def help():
 13)play queen = next player misses a go
 14)gandalf = you declare the final round of the game
 15)done = finsihed your go
-16) save
+16) quit
+17) save
     """)
 def merge(left, right):     #merge sort algorithm with reccursion. this is used for sorting out the tuples and 2d arrays from lowest to highest
         left_index, right_index = 0, 0
@@ -375,9 +378,13 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                 drawACardChances = 0
                 done = False
                 duringRound = 0
+                allowSaveGame = 0
+                newCard = (None,None)
                 while done == False:
                     duringRound = duringRound + 1
                     while i == 0:
+                        #def player1Turn(Round, skip, done, Gandalf,duringRound,allowSaveGame,newCard,drawACardChances,callGandalfChecker,i,table,virtualTable):
+                        allowSaveGame = allowSaveGame + 1
                         if Round == 1 and duringRound == 1:
                             a = int(input("which cards would you like to look at: 1,2,3 or 4")) -1
                             b = int(input("which cards would you like to look at: 1,2,3 or 4")) -1
@@ -403,7 +410,6 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             help()
 
                         elif ValidCommand == "draw":
-                            #Items = ["draw","deck"] dont know y this is here
                             newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                             drawACardChances += 1
                             callGandalfChecker += 1
@@ -473,7 +479,6 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                 displayTable(table)
                                 virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                                 displayTable(virtualTable)
-                                #discardPile.reverse()       #correct the order
                                 if len(discardPile) !=0:
                                     print(f"discard pile: {discardPile[0]}")  
                                 Commands.clear()
@@ -491,73 +496,87 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             displayTable(table)
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
-                            #discardPile.reverse()       #correct the order
                             if len(discardPile) !=0:
                                 print(f"discard pile: {discardPile}")
 
-                        elif ValidCommand == "save":
-                            newGameFileName = input("what do you want to save the game file as: ")
-                            f = open(f"{newGameFileName}.txt", "w")
-                            formatDeck = [] 
-                            for i in range (deck.size()):
-                                formatDeck.append(deck.peek(i))
-                            f.write(str(formatDeck))
-                            f.write("\n")
-                            f.write(str(discardPile))
-                            f.write("\n")
-                            f.write(str(p1.cards))
-                            f.write("\n")
-                            f.write(str(p2.cards))
-                            f.write("\n")
-                            f.write(str(p3.cards))
-                            f.write("\n")
-                            f.write(str(p4.cards))
-                            f.write("\n")
-                            f.write(str(p1.mistakeCounter))
-                            f.write("\n")
-                            f.write(str(p2.mistakeCounter))
-                            f.write("\n")
-                            f.write(str(p3.mistakeCounter))
-                            f.write("\n")
-                            f.write(str(p4.mistakeCounter))
-                            f.write("\n")
-                            f.write(str(p2.difficulty))
-                            f.write("\n")
-                            f.write(str(p3.difficulty))
-                            f.write("\n")
-                            f.write(str(p4.difficulty))
-                            f.write("\n")
-                            f.write(str(p2.playersCardsDictionary))
-                            f.write("\n")
-                            f.write(str(p3.playersCardsDictionary))
-                            f.write("\n")
-                            f.write(str(p4.playersCardsDictionary))
-                            f.close()          
+                        elif ValidCommand == "quit":
+                            confirm = input("you have not saved this game yet. are you sure you want to quit the game? ")
+                            if confirm == "yes":
+                                print("you have chosen to quit the game. goodbye")
+                                break
+                            else:
+                                pass
 
-                            print("the game has been saved. Goodbye")
-                            break      
+                        elif ValidCommand == "save":
+                            if allowSaveGame == 1:
+                                newGameFileName = input("what do you want to save the game file as: ")
+                                f = open(f"{newGameFileName}.txt", "w")
+                                formatDeck = [] 
+                                for i in range (deck.size()):
+                                    formatDeck.append(deck.peek(i))
+                                f.write(str(formatDeck))
+                                f.write("\n")
+                                f.write(str(discardPile))
+                                f.write("\n")
+                                f.write(str(p1.cards))
+                                f.write("\n")
+                                f.write(str(p2.cards))
+                                f.write("\n")
+                                f.write(str(p3.cards))
+                                f.write("\n")
+                                f.write(str(p4.cards))
+                                f.write("\n")
+                                f.write(str(p1.mistakeCounter))
+                                f.write("\n")
+                                f.write(str(p2.mistakeCounter))
+                                f.write("\n")
+                                f.write(str(p3.mistakeCounter))
+                                f.write("\n")
+                                f.write(str(p4.mistakeCounter))
+                                f.write("\n")
+                                f.write(str(p2.difficulty))
+                                f.write("\n")
+                                f.write(str(p3.difficulty))
+                                f.write("\n")
+                                f.write(str(p4.difficulty))
+                                f.write("\n")
+                                f.write(str(p2.playersCardsDictionary))
+                                f.write("\n")
+                                f.write(str(p3.playersCardsDictionary))
+                                f.write("\n")
+                                f.write(str(p4.playersCardsDictionary))
+                                f.close()          
+
+                                print("the game has been saved. Goodbye")
+                                break
+                            else:
+                                print("you can only save the game at the start of your go")      
                         Commands.clear()
+                        #[Round, skip, done, Gandalf,duringRound,allowSaveGame,newCard,drawACardChances,callGandalfChecker,i,table,virtualTable]= player1Turn(Round, skip, done, Gandalf,duringRound,allowSaveGame,newCard,drawACardChances,callGandalfChecker,i,table,virtualTable)
 
                     
                     while i == 1:          #player 2 AI
                         
                         difficulty = Moves.allPlayers[i].difficulty            
                         if Round == 1:
-                            knownCards = Moves.lookAtCardsStartofRound(p2.cards,0,1)
+                            temp = Moves.lookAtCardsStartofRound(p2.cards,0,1)
+                            knownCards = [list(temp[0]),list(temp[1])]
+                            knownCards.append([None,None])
+                            knownCards.append([None,None])
                         print(f"known cards: {knownCards}")
                         tempCards = []
                         Items = ["draw","deck"]
                         drawACardChances = 0
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
 
-                        #time.sleep(5)
+                        time.sleep(5)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
                             print(f"PLAYER 2 HAS PLAYED A {newCard[0]}")
                             listOfCards = Moves.lookAtOwnCard(p2.cards, newCard, i, p2.playerNumber, 2)
                             knownCards.append(listOfCards[0])
                             newCard = listOfCards[1]
-                            #time.sleep(5)
+                            time.sleep(5)
 
                         
                         elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
@@ -582,19 +601,106 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             else:
                                 position = "card4"
                             Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
-                            #time.sleep(5)
+                            time.sleep(5)
 
-                        elif newCard[0] == "jack":      #need to learn how to read hashtable/dictionary 
-                            print("not finshed")
-                            Moves.discard(discardPile, newCard)
-                            #time.sleep(5)
+                        elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
+                            playersCardsValue = []
+                            for i in Moves.allPlayers[1].playersCardsDictionary["players"].keys():
+                                x =1
+                                for j in Moves.allPlayers[1].playersCardsDictionary["players"][i].values():
+                                    j = [j[0],j[1]]
+                                    if j == [None,None]:
+                                        pass
+                                        x = x+1
+                                    else:
+                                        if j[0]== "Ace":
+                                            j[0]= 1
+                                        elif j[0]== "Jack":
+                                            j[0] = 11
+                                        elif j[0]== "Queen":
+                                            j[0] = 12
+                                        elif j[0]== "King":
+                                            j[0] = 13
+                                        else:
+                                            j[0]= int(j[0])
+                                        playersCardsValue.append([j[0],j[1],i,x])   #card vakue, card suit, playernumber, card position
+                                        x = x+1
+
+                            playersCardsValue = merge_sort(playersCardsValue)
+
+                            sortedKnownCards = []
+                            for i in range(len(knownCards)):
+                                j = 0
+                                if knownCards[i][0]== "Ace":
+                                    j= 1
+                                elif knownCards[i][0]== "Jack":
+                                    j = 11
+                                elif knownCards[i][0]== "Queen":
+                                    j= 12
+                                elif knownCards[i][0]== "King":
+                                    j= 13
+                                elif knownCards[i][0]== None:
+                                    j= 0
+                                else:
+                                    j= int(knownCards[i][0])
+                                sortedKnownCards.append([j,knownCards[i][1],i]) #card value, card suit, card position
+                            sortedKnownCards = merge_sort(sortedKnownCards)
+
+                            print(sortedKnownCards)
+                            print(len(playersCardsValue))
+                            if len(playersCardsValue) == 0:
+                                pass
+                            elif sortedKnownCards[3][0] > playersCardsValue[0][0]:      #swaps AI players highest card with the known lowest card
+                                tempKnownCard = list(sortedKnownCards[3])
+                                tempPlayersCardsValue = list(playersCardsValue[0])
+
+                                sortedKnownCards[3][0] = tempPlayersCardsValue[0]
+                                sortedKnownCards[3][1] = tempPlayersCardsValue[1]
+
+                                playersCardsValue[0][0]= tempKnownCard[0]
+                                playersCardsValue[0][1]= tempKnownCard[1]
+                                print(playersCardsValue)
+                                if playersCardsValue[0][0]== 1:
+                                    playersCardsValue[0][0] = "Ace"
+                                elif playersCardsValue[0][0]== 11:
+                                    playersCardsValue[0][0] = "Jack"
+                                elif playersCardsValue[0][0]== 12:
+                                    playersCardsValue[0][0] = "Queen"
+                                elif playersCardsValue[0][0]== 13:
+                                    playersCardsValue[0][0] = "King"
+                                else:
+                                    pass
+                                if sortedKnownCards[3][0]== 1:
+                                    sortedKnownCards[3][0] = "Ace"
+                                elif psortedKnownCards[3][0]== 11:
+                                    sortedKnownCards[3][0] = "Jack"
+                                elif sortedKnownCards[3][0]== 12:
+                                    sortedKnownCards[3][0] = "Queen"
+                                elif sortedKnownCards[3][0]== 13:
+                                    sortedKnownCards[3][0] = "King"
+                                else:
+                                    pass
+                                
+                                Moves.allPlayers[1].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) #chnages AI players dictionary to new card
+                                if tempPlayersCardsValue[2] == "player1":
+                                    a = 0
+                                elif tempPlayersCardsValue[2] == "player3":
+                                    a = 2
+                                else:
+                                    a = 3
+                                Moves.allPlayers[a].cards[playersCardsValue[0][3]-1] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1]))    #swap the other players card with thier card
+                                Moves.allPlayers[1].cards[sortedKnownCards[3][2]] = (str(sortedKnownCards[3][0]),str(sortedKnownCards[3][1]))    #swap own players card with new one
+                                print(f"player 2 has swapped thier card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
+                                discardPile.append(newCard)
+                            
+                            time.sleep(5)
                         
                         elif newCard[0] == "Queen":     #miss a go
                             print("PLAYER 2 HAS PLAYED A QUEEN")
                             a = Moves.skip(newCard)
                             skip = a[0]
                             newCard = a[1]
-                            #time.sleep(5)
+                            time.sleep(5)
 
                         else:
                             print("PLAYER 2 HAS SWAPPED A CARD")        #swap a card
@@ -626,7 +732,9 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
                                 Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
                                 newCard = Moves.discard(discardPile ,newCard)
-                            #time.sleep(5)
+                                print(f"player {i} has swapped their card {tempCards[3][1]} with the new card")
+        
+                            time.sleep(5)
 
                         print(f"known cards: {knownCards}")
 
@@ -641,7 +749,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                         done = True             #go finished
                         i = 5
-                        #time.sleep(10)
+                        time.sleep(10)
 
                     while i == 2:        #player 3 AI
                         done = True
