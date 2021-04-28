@@ -124,7 +124,7 @@ class Moves:
                 print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
         else:
             discardPile.append(newCard)
-            return([Moves.allPlayers[counter].cards[AIChoice],(None,None)])
+            return Moves.allPlayers[counter].cards[AIChoice]
 
 
     
@@ -182,40 +182,6 @@ class Moves:
                 print("you have made a mistake")
                 print("5 penalty points added")
                 print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
-
-    def CheckCommandIsValid(self, Items):
-        if Items[0].upper() == "SLAP":
-            return "SLAP"
-        elif Items[0] == "help":
-            return "help"                   
-        elif Items[0] == "draw" and (Items[1] == "deck" or Items[1] == "discard"):
-            return "draw"
-        elif Items[0] == "discard":
-            return "discard"
-        elif Items[0] == "swap" and (Items[1] == "card" or Items[1] == "cards"):
-            return "swap"
-        elif Items[0] == "play" and (Items[1] == "7" or Items[1] == "8"):
-            return "lookAtOwn"
-        elif Items[0] == "play" and (Items[1] == "9" or Items[1] == "10"):
-            return "lookAtSomoneElses"
-        elif Items[0] == "play" and Items[1] == "jack":
-            return "Jack"
-        elif Items[0] == "play" and Items[1] == "queen":
-            return "Queen"      
-        elif Items[0] == "gandalf":
-            return "gandalf"
-        elif Items[0] == "done":
-            return "done"
-        elif Items[0] == "quit":
-            return "quit"
-        elif Items[0] == "save":
-            return "save"                 
-        else:
-            return "notValid"
-    
-        
-    def slapCommand(self, Items):
-        print("NEED TO MAKE")
     
     def drawCommand(self, Items,deck,discardPile, chances):
         if chances > 0:
@@ -250,6 +216,57 @@ class Moves:
             return True
         else:
             return False
+
+    def help():
+        print("""VALID COMMANDS:
+            
+        1)SLAP
+        2)draw deck = draw a card from the deck
+        3)draw discard = draw a card from the discard
+        6)swap card = swap one of your cards with the new card drawn
+        7)swap cards = swap multpile of the same value cards with the new card drawn
+        8)play 7 = look at one of your own cards
+        9)play 8 = look at one of your own cards
+        10)play 9 = look at somone elses card
+        11)play 10 = look at somone elses card
+        12)play jack = swap a card with someone else
+        13)play queen = next player misses a go
+        14)gandalf = you declare the final round of the game
+        15)done = finsihed your go
+        16) quit
+        17) save
+            """)
+    
+    def CheckCommandIsValid(self, Items):
+        if Items[0] == "help":
+            return "help"                   
+        elif Items[0] == "draw" and (Items[1] == "deck" or Items[1] == "discard"):
+            return "draw"
+        elif Items[0] == "discard":
+            return "discard"
+        elif Items[0] == "swap" and (Items[1] == "card" or Items[1] == "cards"):
+            return "swap"
+        elif Items[0] == "play" and (Items[1] == "7" or Items[1] == "8"):
+            return "lookAtOwn"
+        elif Items[0] == "play" and (Items[1] == "9" or Items[1] == "10"):
+            return "lookAtSomoneElses"
+        elif Items[0] == "play" and Items[1] == "jack":
+            return "Jack"
+        elif Items[0] == "play" and Items[1] == "queen":
+            return "Queen"      
+        elif Items[0] == "gandalf":
+            return "gandalf"
+        elif Items[0] == "done":
+            return "done"
+        elif Items[0] == "quit":
+            return "quit"
+        elif Items[0] == "save":
+            return "save"                 
+        else:
+            return "notValid"
+
+
+
 
 def createTable(table,p1,p2,p3,p4):         #creates table to store actual values of cards nd positions
     for i in range (4):
@@ -299,25 +316,7 @@ def displayTable(table):
 def displayCardToPlayer(card):
     return (f"the {card[0]} of {card[1]}")          #displays cards in user readable/friendly way
 
-def help():
-    print("""VALID COMMANDS:
-    
-1)SLAP
-2)draw deck = draw a card from the deck
-3)draw discard = draw a card from the discard
-6)swap card = swap one of your cards with the new card drawn
-7)swap cards = swap multpile of the same value cards with the new card drawn
-8)play 7 = look at one of your own cards
-9)play 8 = look at one of your own cards
-10)play 9 = look at somone elses card
-11)play 10 = look at somone elses card
-12)play jack = swap a card with someone else
-13)play queen = next player misses a go
-14)gandalf = you declare the final round of the game
-15)done = finsihed your go
-16) quit
-17) save
-    """)
+
 def merge(left, right):     #merge sort algorithm with reccursion. this is used for sorting out the tuples and 2d arrays from lowest to highest
         left_index, right_index = 0, 0
         result = []
@@ -335,7 +334,7 @@ def merge(left, right):     #merge sort algorithm with reccursion. this is used 
 
 
 def merge_sort(array):
-    if len(array) <= 1:  # base case
+    if len(array) <= 1:  
         return array
 
     # divide array in half and merge sort recursively
@@ -344,7 +343,7 @@ def merge_sort(array):
     right = merge_sort(array[half:])
 
     return merge(left, right)
-    
+
 
 def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty):
     skip = False            # for queen
@@ -552,35 +551,68 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             else:
                                 print("you can only save the game at the start of your go")      
                         Commands.clear()
-                        #[Round, skip, done, Gandalf,duringRound,allowSaveGame,newCard,drawACardChances,callGandalfChecker,i,table,virtualTable]= player1Turn(Round, skip, done, Gandalf,duringRound,allowSaveGame,newCard,drawACardChances,callGandalfChecker,i,table,virtualTable)
 
                     
                     while i == 1:          #player 2 AI
-                        
-                        difficulty = Moves.allPlayers[i].difficulty            
+                        difficulty = Moves.allPlayers[i].difficulty
+                        probability = random.randint(1,10)
+                        forget = random.randint(1,100)
+                        percentage = 0
+                        if difficulty == 1:
+                            percentage = 50
+                        elif difficulty == 2:
+                            percentage = 70
+                        elif difficulty == 3:
+                            percentage = 90
+                                    
                         if Round == 1:
                             temp = Moves.lookAtCardsStartofRound(p2.cards,0,1)
                             knownCards = [list(temp[0]),list(temp[1])]
                             knownCards.append([None,None])
                             knownCards.append([None,None])
-                        print(f"known cards: {knownCards}")
                         tempCards = []
                         Items = ["draw","deck"]
                         drawACardChances = 0
-                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
 
+                        cardValue = []
+                        for j in p2.cards:
+                            if j[0] == "Ace":
+                                cardValue.append(1)
+                            elif j[0] == "Jack":
+                                cardValue.append(11)
+                            elif j[0] == "Queen":
+                                cardValue.append(12)
+                            elif j[0] == "King":
+                                cardValue.append(13)
+                            else:
+                                cardValue.append(int(j[0]))
+                        
+                        if sum(cardValue) <= 5:
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS SAID GANDALF!")
+                            print("FINAL ROUND")
+                            Gandalf = True
+                            done = True             #go finished
+                            i = 5
+                            print("TABLE AT END OF TURN")
+                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                            displayTable(table)
+                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                            displayTable(virtualTable)
+                            if len(discardPile) !=0:
+                                print(f"discard pile: {discardPile[0]}")  
+
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                         time.sleep(5)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
-                            print(f"PLAYER 2 HAS PLAYED A {newCard[0]}")
-                            listOfCards = Moves.lookAtOwnCard(p2.cards, newCard, i, p2.playerNumber, 2)
-                            knownCards.append(listOfCards[0])
-                            newCard = listOfCards[1]
+                            seenCard = Moves.lookAtOwnCard(p2.cards, newCard, i, p2.playerNumber, 2)
+                            knownCards.append(seenCard)
+                            newCard = (None,None)
                             time.sleep(5)
 
                         
                         elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
-                            print(f"PLAYER 2 HAS PLAYED A {newCard[0]}")
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A {newCard[0]}")
                             listOfCards = Moves.lookAtSomeoneElsesCard(newCard, Moves.allPlayers[i].difficulty, Moves.allPlayers[i].playerNumber, i)
                             playerNumber = listOfCards[0]
                             position = listOfCards[1]
@@ -597,124 +629,175 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             elif position == 1:
                                 position = "card2"
                             elif position == 2:
-                                position = "card2"
+                                position = "card3"
                             else:
                                 position = "card4"
-                            Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    if forget <= 10:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 7:
+                                    if forget <= 6:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            else:
+                                if 1 <= probability and probability <= 9:
+                                    if forget == 1:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+
+                            print(f"player {Moves.allPlayers[i].playerNumber} has seen {playerNumber}'s {position} ")
+
                             time.sleep(5)
 
                         elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
                             playersCardsValue = []
-                            for i in Moves.allPlayers[1].playersCardsDictionary["players"].keys():
+                            for key in Moves.allPlayers[1].playersCardsDictionary["players"].keys():
                                 x =1
-                                for j in Moves.allPlayers[1].playersCardsDictionary["players"][i].values():
-                                    j = [j[0],j[1]]
-                                    if j == [None,None]:
+                                for value in Moves.allPlayers[1].playersCardsDictionary["players"][key].values():
+                                    value = [value[0],value[1]]
+                                    if value == [None,None]:
                                         pass
                                         x = x+1
                                     else:
-                                        if j[0]== "Ace":
-                                            j[0]= 1
-                                        elif j[0]== "Jack":
-                                            j[0] = 11
-                                        elif j[0]== "Queen":
-                                            j[0] = 12
-                                        elif j[0]== "King":
-                                            j[0] = 13
+                                        if value[0]== "Ace":
+                                            value[0]= 1
+                                        elif value[0]== "Jack":
+                                            value[0] = 11
+                                        elif value[0]== "Queen":
+                                            value[0] = 12
+                                        elif value[0]== "King":
+                                            value[0] = 13
                                         else:
-                                            j[0]= int(j[0])
-                                        playersCardsValue.append([j[0],j[1],i,x])   #card vakue, card suit, playernumber, card position
+                                            value[0]= int(value[0])
+                                        playersCardsValue.append([value[0],value[1],key,x])   #card value, card suit, playernumber, card position
                                         x = x+1
 
                             playersCardsValue = merge_sort(playersCardsValue)
 
                             sortedKnownCards = []
-                            for i in range(len(knownCards)):
-                                j = 0
-                                if knownCards[i][0]== "Ace":
-                                    j= 1
-                                elif knownCards[i][0]== "Jack":
-                                    j = 11
-                                elif knownCards[i][0]== "Queen":
-                                    j= 12
-                                elif knownCards[i][0]== "King":
-                                    j= 13
-                                elif knownCards[i][0]== None:
-                                    j= 0
+                            for val in range(len(knownCards)):
+                                Rval = 0
+                                if knownCards[val][0]== "Ace":
+                                    Rval= 1
+                                elif knownCards[val][0]== "Jack":
+                                    Rval = 11
+                                elif knownCards[val][0]== "Queen":
+                                    Rval= 12
+                                elif knownCards[val][0]== "King":
+                                    Rval= 13
+                                elif knownCards[val][0]== None:
+                                    Rval= 0
                                 else:
-                                    j= int(knownCards[i][0])
-                                sortedKnownCards.append([j,knownCards[i][1],i]) #card value, card suit, card position
+                                    Rval= int(knownCards[val][0])
+                                sortedKnownCards.append([Rval,knownCards[val][1],val]) #card value, card suit, card position
                             sortedKnownCards = merge_sort(sortedKnownCards)
 
-                            print(sortedKnownCards)
-                            print(len(playersCardsValue))
-                            if len(playersCardsValue) == 0:
-                                pass
-                            elif sortedKnownCards[3][0] > playersCardsValue[0][0]:      #swaps AI players highest card with the known lowest card
-                                tempKnownCard = list(sortedKnownCards[3])
-                                tempPlayersCardsValue = list(playersCardsValue[0])
-
-                                sortedKnownCards[3][0] = tempPlayersCardsValue[0]
-                                sortedKnownCards[3][1] = tempPlayersCardsValue[1]
-
-                                playersCardsValue[0][0]= tempKnownCard[0]
-                                playersCardsValue[0][1]= tempKnownCard[1]
-                                print(playersCardsValue)
-                                if playersCardsValue[0][0]== 1:
-                                    playersCardsValue[0][0] = "Ace"
-                                elif playersCardsValue[0][0]== 11:
-                                    playersCardsValue[0][0] = "Jack"
-                                elif playersCardsValue[0][0]== 12:
-                                    playersCardsValue[0][0] = "Queen"
-                                elif playersCardsValue[0][0]== 13:
-                                    playersCardsValue[0][0] = "King"
-                                else:
-                                    pass
-                                if sortedKnownCards[3][0]== 1:
-                                    sortedKnownCards[3][0] = "Ace"
-                                elif psortedKnownCards[3][0]== 11:
-                                    sortedKnownCards[3][0] = "Jack"
-                                elif sortedKnownCards[3][0]== 12:
-                                    sortedKnownCards[3][0] = "Queen"
-                                elif sortedKnownCards[3][0]== 13:
-                                    sortedKnownCards[3][0] = "King"
-                                else:
-                                    pass
-                                
-                                Moves.allPlayers[1].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) #chnages AI players dictionary to new card
-                                if tempPlayersCardsValue[2] == "player1":
-                                    a = 0
-                                elif tempPlayersCardsValue[2] == "player3":
-                                    a = 2
-                                else:
-                                    a = 3
-                                Moves.allPlayers[a].cards[playersCardsValue[0][3]-1] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1]))    #swap the other players card with thier card
-                                Moves.allPlayers[1].cards[sortedKnownCards[3][2]] = (str(sortedKnownCards[3][0]),str(sortedKnownCards[3][1]))    #swap own players card with new one
-                                print(f"player 2 has swapped thier card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
-                                discardPile.append(newCard)
+                            playerNumberList = [0,2,3]
+                            playerNumber = playerNumberList[random.randint(0,2)]
+                            playerNumbersCardPosition = random.randint(0,3)
                             
+                            rememebers = False
+
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    temporaryCard = p2.cards[0]
+                                    p2.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 3:
+                                    temporaryCard = p2.cards[0]
+                                    p2.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard 
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+                            else:
+                                if 1 == probability:
+                                    temporaryCard = p2.cards[0]
+                                    p2.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard 
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+
+                            if rememebers == True:
+
+                                if len(playersCardsValue) == 0:
+                                    pass
+                                elif sortedKnownCards[3][0] > playersCardsValue[0][0]:      #swaps AI players highest card with the known lowest card
+                                    tempKnownCard = list(sortedKnownCards[3])
+                                    tempPlayersCardsValue = list(playersCardsValue[0])
+
+                                    sortedKnownCards[3][0] = tempPlayersCardsValue[0]
+                                    sortedKnownCards[3][1] = tempPlayersCardsValue[1]
+
+                                    playersCardsValue[0][0]= tempKnownCard[0]
+                                    playersCardsValue[0][1]= tempKnownCard[1]
+                                    print(playersCardsValue)
+                                    if playersCardsValue[0][0]== 1:
+                                        playersCardsValue[0][0] = "Ace"
+                                    elif playersCardsValue[0][0]== 11:
+                                        playersCardsValue[0][0] = "Jack"
+                                    elif playersCardsValue[0][0]== 12:
+                                        playersCardsValue[0][0] = "Queen"
+                                    elif playersCardsValue[0][0]== 13:
+                                        playersCardsValue[0][0] = "King"
+                                    else:
+                                        pass
+                                    if sortedKnownCards[3][0]== 1:
+                                        sortedKnownCards[3][0] = "Ace"
+                                    elif psortedKnownCards[3][0]== 11:
+                                        sortedKnownCards[3][0] = "Jack"
+                                    elif sortedKnownCards[3][0]== 12:
+                                        sortedKnownCards[3][0] = "Queen"
+                                    elif sortedKnownCards[3][0]== 13:
+                                        sortedKnownCards[3][0] = "King"
+                                    else:
+                                        pass
+                                    
+                                    Moves.allPlayers[1].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) #chnages AI players dictionary to new card
+                                    if tempPlayersCardsValue[2] == "player1":
+                                        a = 0
+                                    elif tempPlayersCardsValue[2] == "player3":
+                                        a = 2
+                                    else:
+                                        a = 3
+                                    Moves.allPlayers[a].cards[playersCardsValue[0][3]-1] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1]))    #swap the other players card with thier card
+                                    Moves.allPlayers[1].cards[sortedKnownCards[3][2]] = (str(sortedKnownCards[3][0]),str(sortedKnownCards[3][1]))    #swap own players card with new one
+                                    print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
+                            discardPile.append(newCard)
+                                
                             time.sleep(5)
                         
                         elif newCard[0] == "Queen":     #miss a go
-                            print("PLAYER 2 HAS PLAYED A QUEEN")
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A QUEEN")
                             a = Moves.skip(newCard)
                             skip = a[0]
                             newCard = a[1]
                             time.sleep(5)
 
                         else:
-                            print("PLAYER 2 HAS SWAPPED A CARD")        #swap a card
-                            for i in range (4):
-                                if Moves.allPlayers[1].cards[i][0] == "Ace":
-                                    tempCards.append((1,i))
-                                elif Moves.allPlayers[1].cards[i][0] == "Jack":
-                                    tempCards.append((11,i))
-                                elif Moves.allPlayers[1].cards[i][0] == "Queen":
-                                    tempCards.append((12,i))
-                                elif Moves.allPlayers[1].cards[i][0] == "King":
-                                    tempCards.append((13,i))
+                            for realValue in range (4):
+                                if Moves.allPlayers[1].cards[realValue][0] == "Ace":
+                                    tempCards.append((1,realValue))
+                                elif Moves.allPlayers[1].cards[realValue][0] == "Jack":
+                                    tempCards.append((11,realValue))
+                                elif Moves.allPlayers[1].cards[realValue][0] == "Queen":
+                                    tempCards.append((12,realValue))
+                                elif Moves.allPlayers[1].cards[realValue][0] == "King":
+                                    tempCards.append((13,realValue))
                                 else:
-                                    tempCards.append((int(Moves.allPlayers[1].cards[i][0]),i))  #the tempCards holds the (cardsValue,cardsPosition) as a list
+                                    tempCards.append((int(Moves.allPlayers[1].cards[realValue][0]),realValue))  #the tempCards holds the (cardsValue,cardsPosition) as a list
                             
                             tempCards = merge_sort(tempCards) #sorts the tempCards by their value, lowest to highest
                                       
@@ -729,16 +812,26 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             elif newCard[0]== "King":
                                 tempNewCard = 13
 
-                            if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
-                                Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
-                                newCard = Moves.discard(discardPile ,newCard)
-                                print(f"player {i} has swapped their card {tempCards[3][1]} with the new card")
-        
+                            remember = False
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    remember = True
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 7:
+                                    remember = True
+                            else:
+                                if 1 <= probability and probability <= 9:
+                                    remember = True
+                            if remember == True:
+                                if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
+                                    Moves.allPlayers[1].cards[tempCards[3][1]] = newCard
+                                    newCard = Moves.discard(discardPile ,newCard)
+                                    print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card in poisition {tempCards[3][1] + 1} with the new card")
+                                else:
+                                    discardPile.append(newCard)
                             time.sleep(5)
 
-                        print(f"known cards: {knownCards}")
-
-                    
+                        print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
                         table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
                         displayTable(table)
@@ -752,12 +845,589 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                         time.sleep(10)
 
                     while i == 2:        #player 3 AI
-                        done = True
+
+                        difficulty = Moves.allPlayers[i].difficulty
+                        probability = random.randint(1,10)
+                        forget = random.randint(1,100)
+                        percentage = 0
+                        if difficulty == 1:
+                            percentage = 50
+                        elif difficulty == 2:
+                            percentage = 70
+                        elif difficulty == 3:
+                            percentage = 90
+                                    
+                        if Round == 1:
+                            temp = Moves.lookAtCardsStartofRound(p3.cards,0,1)
+                            knownCards = [list(temp[0]),list(temp[1])]
+                            knownCards.append([None,None])
+                            knownCards.append([None,None])
+                        tempCards = []
+                        Items = ["draw","deck"]
+                        drawACardChances = 0
+
+                        cardValue = []
+                        for j in p3.cards:
+                            if j[0] == "Ace":
+                                cardValue.append(1)
+                            elif j[0] == "Jack":
+                                cardValue.append(11)
+                            elif j[0] == "Queen":
+                                cardValue.append(12)
+                            elif j[0] == "King":
+                                cardValue.append(13)
+                            else:
+                                cardValue.append(int(j[0]))
+                        
+                        if sum(cardValue) <= 5:
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS SAID GANDALF!")
+                            print("FINAL ROUND")
+                            Gandalf = True
+                            done = True             #go finished
+                            i = 5
+                            print("TABLE AT END OF TURN")
+                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                            displayTable(table)
+                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                            displayTable(virtualTable)
+                            if len(discardPile) !=0:
+                                print(f"discard pile: {discardPile[0]}")  
+
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
+                        time.sleep(5)
+
+                        if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
+                            seenCard = Moves.lookAtOwnCard(p3.cards, newCard, i, p3.playerNumber, 2)
+                            knownCards.append(seenCard)
+                            newCard = (None,None)
+                            time.sleep(5)
+
+                        
+                        elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A {newCard[0]}")
+                            listOfCards = Moves.lookAtSomeoneElsesCard(newCard, Moves.allPlayers[i].difficulty, Moves.allPlayers[i].playerNumber, i)
+                            playerNumber = listOfCards[0]
+                            position = listOfCards[1]
+                            playerCard = listOfCards[2]
+
+                            if playerNumber == 1:
+                                playerNumber = "player1"
+                            elif playerNumber == 2:
+                                playerNumber = "player2"
+                            elif playerNumber == 4:
+                                playerNumber = "player4"
+                            if position == 0:
+                                position = "card1"
+                            elif position == 1:
+                                position = "card2"
+                            elif position == 2:
+                                position = "card3"
+                            else:
+                                position = "card4"
+
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    if forget <= 10:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 7:
+                                    if forget <= 6:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            else:
+                                if 1 <= probability and probability <= 9:
+                                    if forget == 1:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+
+                                print(f"player {Moves.allPlayers[i].playerNumber} has seen {playerNumber}'s {position} ")
+
+                            time.sleep(5)
+
+                        elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
+                            playersCardsValue = []
+                            for key in Moves.allPlayers[i].playersCardsDictionary["players"].keys():
+                                x =1
+                                for value in Moves.allPlayers[i].playersCardsDictionary["players"][key].values():
+                                    value = [value[0],value[1]]
+                                    if value == [None,None]:
+                                        pass
+                                        x = x+1
+                                    else:
+                                        if value[0]== "Ace":
+                                            value[0]= 1
+                                        elif value[0]== "Jack":
+                                            value[0] = 11
+                                        elif value[0]== "Queen":
+                                            value[0] = 12
+                                        elif value[0]== "King":
+                                            value[0] = 13
+                                        else:
+                                            value[0]= int(value[0])
+                                        playersCardsValue.append([value[0],value[1],key,x])   #card value, card suit, playernumber, card position
+                                        x = x+1
+
+                            playersCardsValue = merge_sort(playersCardsValue)
+
+                            sortedKnownCards = []
+                            for val in range(len(knownCards)):
+                                Rval = 0
+                                if knownCards[val][0]== "Ace":
+                                    Rval= 1
+                                elif knownCards[val][0]== "Jack":
+                                    Rval = 11
+                                elif knownCards[val][0]== "Queen":
+                                    Rval= 12
+                                elif knownCards[val][0]== "King":
+                                    Rval= 13
+                                elif knownCards[val][0]== None:
+                                    Rval= 0
+                                else:
+                                    Rval= int(knownCards[val][0])
+                                sortedKnownCards.append([Rval,knownCards[val][1],val]) #card value, card suit, card position
+                            sortedKnownCards = merge_sort(sortedKnownCards)
+
+                            playerNumberList = [0,1,3]
+                            playerNumber = playerNumberList[random.randint(0,2)]
+                            playerNumbersCardPosition = random.randint(0,3)
+                            
+                            rememebers = False
+
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    temporaryCard = p3.cards[0]
+                                    p3.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 3:
+                                    temporaryCard = p3.cards[0]
+                                    p3.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard 
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+                            else:
+                                if 1 == probability:
+                                    temporaryCard = p3.cards[0]
+                                    p3.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard 
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+
+                            if rememebers == True:
+
+                                if len(playersCardsValue) == 0:
+                                    pass
+                                elif sortedKnownCards[3][0] > playersCardsValue[0][0]:      #swaps AI players highest card with the known lowest card
+                                    tempKnownCard = list(sortedKnownCards[3])
+                                    tempPlayersCardsValue = list(playersCardsValue[0])
+
+                                    sortedKnownCards[3][0] = tempPlayersCardsValue[0]
+                                    sortedKnownCards[3][1] = tempPlayersCardsValue[1]
+
+                                    playersCardsValue[0][0]= tempKnownCard[0]
+                                    playersCardsValue[0][1]= tempKnownCard[1]
+                                    print(playersCardsValue)
+                                    if playersCardsValue[0][0]== 1:
+                                        playersCardsValue[0][0] = "Ace"
+                                    elif playersCardsValue[0][0]== 11:
+                                        playersCardsValue[0][0] = "Jack"
+                                    elif playersCardsValue[0][0]== 12:
+                                        playersCardsValue[0][0] = "Queen"
+                                    elif playersCardsValue[0][0]== 13:
+                                        playersCardsValue[0][0] = "King"
+                                    else:
+                                        pass
+                                    if sortedKnownCards[3][0]== 1:
+                                        sortedKnownCards[3][0] = "Ace"
+                                    elif psortedKnownCards[3][0]== 11:
+                                        sortedKnownCards[3][0] = "Jack"
+                                    elif sortedKnownCards[3][0]== 12:
+                                        sortedKnownCards[3][0] = "Queen"
+                                    elif sortedKnownCards[3][0]== 13:
+                                        sortedKnownCards[3][0] = "King"
+                                    else:
+                                        pass
+                                    
+                                    Moves.allPlayers[i].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) #chnages AI players dictionary to new card
+                                    if tempPlayersCardsValue[2] == "player1":
+                                        a = 0
+                                    elif tempPlayersCardsValue[2] == "player2":
+                                        a = 1
+                                    else:
+                                        a = 3
+                                    Moves.allPlayers[a].cards[playersCardsValue[0][3]-1] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1]))    #swap the other players card with thier card
+                                    Moves.allPlayers[i].cards[sortedKnownCards[3][2]] = (str(sortedKnownCards[3][0]),str(sortedKnownCards[3][1]))    #swap own players card with new one
+                                    print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
+                            discardPile.append(newCard)
+                                
+                            time.sleep(5)
+                        
+                        elif newCard[0] == "Queen":     #miss a go
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A QUEEN")
+                            a = Moves.skip(newCard)
+                            skip = a[0]
+                            newCard = a[1]
+                            time.sleep(5)
+
+                        else:
+                            for realValue in range (4):
+                                if Moves.allPlayers[i].cards[realValue][0] == "Ace":
+                                    tempCards.append((1,realValue))
+                                elif Moves.allPlayers[i].cards[realValue][0] == "Jack":
+                                    tempCards.append((11,realValue))
+                                elif Moves.allPlayers[i].cards[realValue][0] == "Queen":
+                                    tempCards.append((12,realValue))
+                                elif Moves.allPlayers[i].cards[realValue][0] == "King":
+                                    tempCards.append((13,realValue))
+                                else:
+                                    tempCards.append((int(Moves.allPlayers[i].cards[realValue][0]),realValue))  #the tempCards holds the (cardsValue,cardsPosition) as a list
+                            
+                            tempCards = merge_sort(tempCards) #sorts the tempCards by their value, lowest to highest
+                                      
+
+                            tempNewCard = newCard[0]
+                            if newCard[0]== "Ace":
+                                tempNewCard = 1
+                            elif newCard[0]== "Jack":
+                                tempNewCard = 11
+                            elif newCard[0]== "Queen":
+                                tempNewCard = 12
+                            elif newCard[0]== "King":
+                                tempNewCard = 13
+
+                            remember = False
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    remember = True
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 7:
+                                    remember = True
+                            else:
+                                if 1 <= probability and probability <= 9:
+                                    remember = True
+                            if remember == True:
+                                if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
+                                    Moves.allPlayers[i].cards[tempCards[3][1]] = newCard
+                                    newCard = Moves.discard(discardPile ,newCard)
+                                    print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card in poisition {tempCards[3][1] + 1} with the new card")
+                                else:
+                                    discardPile.append(newCard)
+        
+                            time.sleep(5)
+
+                        print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
+                        print("TABLE AT END OF TURN")
+                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                        displayTable(table)
+                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                        displayTable(virtualTable)
+                        if len(discardPile) !=0:
+                            print(f"discard pile: {discardPile}")
+
+                        done = True             #go finished
                         i = 5
+                        time.sleep(10)
                         
                     while i == 3:               #player 4 AI
-                        done = True
+                        difficulty = Moves.allPlayers[i].difficulty
+                        probability = random.randint(1,10)
+                        forget = random.randint(1,100)
+                        percentage = 0
+                        if difficulty == 1:
+                            percentage = 50
+                        elif difficulty == 2:
+                            percentage = 70
+                        elif difficulty == 3:
+                            percentage = 90
+                                    
+                        if Round == 1:
+                            temp = Moves.lookAtCardsStartofRound(p4.cards,0,1)
+                            knownCards = [list(temp[0]),list(temp[1])]
+                            knownCards.append([None,None])
+                            knownCards.append([None,None])
+                        tempCards = []
+                        Items = ["draw","deck"]
+                        drawACardChances = 0
+
+                        cardValue = []
+                        for j in p4.cards:
+                            if j[0] == "Ace":
+                                cardValue.append(1)
+                            elif j[0] == "Jack":
+                                cardValue.append(11)
+                            elif j[0] == "Queen":
+                                cardValue.append(12)
+                            elif j[0] == "King":
+                                cardValue.append(13)
+                            else:
+                                cardValue.append(int(j[0]))
+                        
+                        if sum(cardValue) <= 5:
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS SAID GANDALF!")
+                            print("FINAL ROUND")
+                            Gandalf = True
+                            done = True             #go finished
+                            i = 5
+                            print("TABLE AT END OF TURN")
+                            table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                            displayTable(table)
+                            virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                            displayTable(virtualTable)
+                            if len(discardPile) !=0:
+                                print(f"discard pile: {discardPile[0]}")  
+
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
+                        newCard = ("Jack", "Diamonds")
+                        time.sleep(5)
+
+                        if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
+                            seenCard = Moves.lookAtOwnCard(p4.cards, newCard, i, p4.playerNumber, 2)
+                            knownCards.append(seenCard)
+                            newCard = (None,None)
+                            time.sleep(5)
+
+                        
+                        elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A {newCard[0]}")
+                            listOfCards = Moves.lookAtSomeoneElsesCard(newCard, Moves.allPlayers[i].difficulty, Moves.allPlayers[i].playerNumber, i)
+                            playerNumber = listOfCards[0]
+                            position = listOfCards[1]
+                            playerCard = listOfCards[2]
+
+                            if playerNumber == 1:
+                                playerNumber = "player1"
+                            elif playerNumber == 2:
+                                playerNumber = "player2"
+                            elif playerNumber == 3:
+                                playerNumber = "player3"
+                            if position == 0:
+                                position = "card1"
+                            elif position == 1:
+                                position = "card2"
+                            elif position == 2:
+                                position = "card3"
+                            else:
+                                position = "card4"
+
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    if forget <= 10:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 7:
+                                    if forget <= 6:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+                            else:
+                                if 1 <= probability and probability <= 9:
+                                    if forget == 1:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = deck.peek(0)
+                                    else:
+                                        Moves.allPlayers[i].playersCardsDictionary["players"][playerNumber][position] = playerCard
+
+                                print(f"player {Moves.allPlayers[i].playerNumber} has seen {playerNumber}'s {position} ")
+
+                            time.sleep(5)
+
+                        elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
+                            playersCardsValue = []
+                            for key in Moves.allPlayers[i].playersCardsDictionary["players"].keys():
+                                x =1
+                                for value in Moves.allPlayers[i].playersCardsDictionary["players"][key].values():
+                                    value = [value[0],value[1]]
+                                    if value == [None,None]:
+                                        pass
+                                        x = x+1
+                                    else:
+                                        if value[0]== "Ace":
+                                            value[0]= 1
+                                        elif value[0]== "Jack":
+                                            value[0] = 11
+                                        elif value[0]== "Queen":
+                                            value[0] = 12
+                                        elif value[0]== "King":
+                                            value[0] = 13
+                                        else:
+                                            value[0]= int(value[0])
+                                        playersCardsValue.append([value[0],value[1],key,x])   #card value, card suit, playernumber, card position
+                                        x = x+1
+
+                            playersCardsValue = merge_sort(playersCardsValue)
+                            print(playersCardsValue)
+
+                            sortedKnownCards = []
+                            for val in range(len(knownCards)):
+                                Rval = 0
+                                if knownCards[val][0]== "Ace":
+                                    Rval= 1
+                                elif knownCards[val][0]== "Jack":
+                                    Rval = 11
+                                elif knownCards[val][0]== "Queen":
+                                    Rval= 12
+                                elif knownCards[val][0]== "King":
+                                    Rval= 13
+                                elif knownCards[val][0]== None:
+                                    Rval= 0
+                                else:
+                                    Rval= int(knownCards[val][0])
+                                sortedKnownCards.append([Rval,knownCards[val][1],val]) #card value, card suit, card position
+                            sortedKnownCards = merge_sort(sortedKnownCards)
+
+                            playerNumberList = [0,1,2]
+                            playerNumber = playerNumberList[random.randint(0,2)]
+                            playerNumbersCardPosition = random.randint(0,3)
+                            
+                            rememebers = False
+
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    temporaryCard = p4.cards[0]
+                                    p4.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 3:
+                                    temporaryCard = p4.cards[0]
+                                    p4.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard 
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+                            else:
+                                if 1 == probability:
+                                    temporaryCard = p4.cards[0]
+                                    p4.cards[0] = Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition]
+                                    Moves.allPlayers[playerNumberList[playerNumber]].cards[playerNumbersCardPosition] = temporaryCard 
+                                    print(f"player {Moves.allPlayers[i].playerNumber} swapped cards with player {playerNumber + 1}'s card {playerNumbersCardPosition}")
+                                else:
+                                    rememebers = True 
+
+                            if rememebers == True:
+
+                                if len(playersCardsValue) == 0:
+                                    pass
+                                elif sortedKnownCards[3][0] > playersCardsValue[0][0]:      #swaps AI players highest card with the known lowest card
+                                    tempKnownCard = list(sortedKnownCards[3])
+                                    tempPlayersCardsValue = list(playersCardsValue[0])
+
+                                    sortedKnownCards[3][0] = tempPlayersCardsValue[0]
+                                    sortedKnownCards[3][1] = tempPlayersCardsValue[1]
+
+                                    playersCardsValue[0][0]= tempKnownCard[0]
+                                    playersCardsValue[0][1]= tempKnownCard[1]
+                                    if playersCardsValue[0][0]== 1:
+                                        playersCardsValue[0][0] = "Ace"
+                                    elif playersCardsValue[0][0]== 11:
+                                        playersCardsValue[0][0] = "Jack"
+                                    elif playersCardsValue[0][0]== 12:
+                                        playersCardsValue[0][0] = "Queen"
+                                    elif playersCardsValue[0][0]== 13:
+                                        playersCardsValue[0][0] = "King"
+                                    else:
+                                        pass
+                                    if sortedKnownCards[3][0]== 1:
+                                        sortedKnownCards[3][0] = "Ace"
+                                    elif psortedKnownCards[3][0]== 11:
+                                        sortedKnownCards[3][0] = "Jack"
+                                    elif sortedKnownCards[3][0]== 12:
+                                        sortedKnownCards[3][0] = "Queen"
+                                    elif sortedKnownCards[3][0]== 13:
+                                        sortedKnownCards[3][0] = "King"
+                                    else:
+                                        pass
+
+                                    Moves.allPlayers[i].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) #chnages AI players dictionary to new card
+                                    if tempPlayersCardsValue[2] == "player1":
+                                        a = 0
+                                    elif tempPlayersCardsValue[2] == "player2":
+                                        a = 1
+                                    else:
+                                        a = 2
+                                    Moves.allPlayers[a].cards[playersCardsValue[0][3]-1] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1]))    #swap the other players card with thier card
+                                    Moves.allPlayers[i].cards[sortedKnownCards[3][2]] = (str(sortedKnownCards[3][0]),str(sortedKnownCards[3][1]))    #swap own players card with new one
+                                    print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
+                            discardPile.append(newCard)
+                                
+                            time.sleep(5)
+                        
+                        elif newCard[0] == "Queen":     #miss a go
+                            print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A QUEEN")
+                            a = Moves.skip(newCard)
+                            skip = a[0]
+                            newCard = a[1]
+                            time.sleep(5)
+
+                        else:
+                            for realValue in range (4):
+                                if Moves.allPlayers[i].cards[realValue][0] == "Ace":
+                                    tempCards.append((1,realValue))
+                                elif Moves.allPlayers[i].cards[realValue][0] == "Jack":
+                                    tempCards.append((11,realValue))
+                                elif Moves.allPlayers[i].cards[realValue][0] == "Queen":
+                                    tempCards.append((12,realValue))
+                                elif Moves.allPlayers[i].cards[realValue][0] == "King":
+                                    tempCards.append((13,realValue))
+                                else:
+                                    tempCards.append((int(Moves.allPlayers[i].cards[realValue][0]),realValue))  #the tempCards holds the (cardsValue,cardsPosition) as a list
+                            
+                            tempCards = merge_sort(tempCards) #sorts the tempCards by their value, lowest to highest
+                                      
+
+                            tempNewCard = newCard[0]
+                            if newCard[0]== "Ace":
+                                tempNewCard = 1
+                            elif newCard[0]== "Jack":
+                                tempNewCard = 11
+                            elif newCard[0]== "Queen":
+                                tempNewCard = 12
+                            elif newCard[0]== "King":
+                                tempNewCard = 13
+
+                            remember = False
+                            if percentage == 50:
+                                if 1 <= probability and probability <= 5:
+                                    remember = True
+                            elif percentage == 70:
+                                if 1 <= probability and probability <= 7:
+                                    remember = True
+                            else:
+                                if 1 <= probability and probability <= 9:
+                                    remember = True
+                            if remember == True:
+                                if tempCards[3][0] > int(tempNewCard):               #if the last cards value is greater than the new card, swap the cards
+                                    Moves.allPlayers[i].cards[tempCards[3][1]] = newCard
+                                    newCard = Moves.discard(discardPile ,newCard)
+                                    print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card in poisition {tempCards[3][1] + 1} with the new card")
+                                else:  
+                                    discardPile.append(newCard)
+                            time.sleep(5)
+
+                        print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
+                        print("TABLE AT END OF TURN")
+                        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
+                        displayTable(table)
+                        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
+                        displayTable(virtualTable)
+                        if len(discardPile) !=0:
+                            print(f"discard pile: {discardPile}")
+
+                        done = True             #go finished
                         i = 5
+                        time.sleep(10)
                     
             else:
                 print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
@@ -767,7 +1437,6 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
     print("END OF GAME")
 
     orderList = []
-    print(Moves.allPlayers[0].cards)
 
     for i in range (4):
         x = int(len(Moves.allPlayers[i].cards)) 
@@ -799,114 +1468,113 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
     
     
 
-choice = int(input("do you want to play single player (1)or multiplayer (2)"))
-if choice == 1:
-    loadGame = input("do you want to load a previous games?")
-    if loadGame == "yes":
-        gameFile = input("what is the file name of the game you want to load: ")
-        print(f"loading {gameFile}...")
-        with open(f'{gameFile}.txt') as f:
-            tempDeck = eval(f.readline())
-            discardPile = eval(f.readline())
-            c1 = eval(f.readline())
-            c2 = eval(f.readline())
-            c3 = eval(f.readline())
-            c4 = eval(f.readline())
-            p1m = int(f.readline())
-            p2m = int(f.readline())
-            p3m = int(f.readline())
-            p4m = int(f.readline())
-            p2d = int(f.readline())
-            p3d = int(f.readline())
-            p4d = int(f.readline())
-            temp2 = f.readline()
-            P2playersCards = eval(temp2)
-            temp3 = f.readline()
-            P3playersCards = eval(temp3)
-            temp4 = f.readline()
-            P4playersCards = eval(temp4)
 
 
-        
-        deck = Stack()
-        for i in range (len(tempDeck)):
-            deck.push(tempDeck[i])
+loadGame = input("do you want to load a previous games?")
+if loadGame == "yes":
+    gameFile = input("what is the file name of the game you want to load: ")
+    print(f"loading {gameFile}...")
+    with open(f'{gameFile}.txt') as f:
+        tempDeck = eval(f.readline())
+        discardPile = eval(f.readline())
+        c1 = eval(f.readline())
+        c2 = eval(f.readline())
+        c3 = eval(f.readline())
+        c4 = eval(f.readline())
+        p1m = int(f.readline())
+        p2m = int(f.readline())
+        p3m = int(f.readline())
+        p4m = int(f.readline())
+        p2d = int(f.readline())
+        p3d = int(f.readline())
+        p4d = int(f.readline())
+        temp2 = f.readline()
+        P2playersCards = eval(temp2)
+        temp3 = f.readline()
+        P3playersCards = eval(temp3)
+        temp4 = f.readline()
+        P4playersCards = eval(temp4)
 
-        
-        p1 = Player(1,c1,0,p1m,0)
-        p2 = AIPlayer(2,c2,0,p2m,p2d,P2playersCards)
-        p3 = AIPlayer(3,c3,0,p3m,p3d,P3playersCards)
-        p4 = AIPlayer(4,c4,0,p4m,p4d,P4playersCards)
+    deck = Stack()
+    for i in range (len(tempDeck)):
+        deck.push(tempDeck[i])
 
+    
+    p1 = Player(1,c1,0,p1m,0)
+    p2 = AIPlayer(2,c2,0,p2m,p2d,P2playersCards)
+    p3 = AIPlayer(3,c3,0,p3m,p3d,P3playersCards)
+    p4 = AIPlayer(4,c4,0,p4m,p4d,P4playersCards)
+
+    rows, cols = (6,6) 
+    table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
+    virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
+
+    table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
+    virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
+
+    Moves = Moves(deck,p1,p2,p3,p4,discardPile)
+    main(Moves,discardPile,Card,Stack,Player,table,virtualTable,True)
+
+else:
+    
+    if __name__ == "__main__":
         rows, cols = (6,6) 
         table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
         virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
 
+        colors = ['heart', 'diamonds', 'spades', 'clubs']
+        tempDeck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
 
-        table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
-        virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)
+        suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
+        x = []
 
-        Moves = Moves(deck,p1,p2,p3,p4,discardPile)
-        main(Moves,discardPile,Card,Stack,Player,table,virtualTable,True)
-
-    else:
-        
-        if __name__ == "__main__":
-            rows, cols = (6,6) 
-            table = [[" " for i in range(cols)] for j in range(rows)]               #table stores the acctual cards and vitural table is what the players see (the back of the card - x)
-            virtualTable = [[" " for i in range(cols)] for j in range(rows)] 
-
-            colors = ['heart', 'diamonds', 'spades', 'clubs']
-            tempDeck = [Card(value, color) for value in range(1, 14) for color in colors]       #creates a deck of cards in order from all the aces to kings
-
-            suits = {1:"Ace", 11: "Jack", 12: "Queen", 13: "King"} 
-            x = []
-
-            deck = Stack()
-            for i in range(0,52):
-                if tempDeck[i].value >= 11 or tempDeck[i].value == 1:                       #if the value is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
-                    value = suits.get(tempDeck[i].value)
-                    x.append((value, tempDeck[i].color))
-                else:
-                    x.append((str(tempDeck[i].value), tempDeck[i].color))
+        deck = Stack()
+        for i in range(0,52):
+            if tempDeck[i].value >= 11 or tempDeck[i].value == 1:                       #if the value is 1 or 11,12,13 then check the dictionary and change suit to ace j,q,k
+                value = suits.get(tempDeck[i].value)
+                x.append((value, tempDeck[i].color))
+            else:
+                x.append((str(tempDeck[i].value), tempDeck[i].color))
 
 
-            random.shuffle(x)            # shuffle deck
-            for i in range (0,52):
-                deck.push(x[i])
+        random.shuffle(x)            # shuffle deck
+        for i in range (0,52):
+            deck.push(x[i])
 
-            c1 = []
-            c2 = []
-            c3 = []
-            c4 = []
-            for i in range (0,4):
-                c1.append(deck.pop())
-                c2.append(deck.pop())
-                c3.append(deck.pop())
-                c4.append(deck.pop())
+        c1 = []
+        c2 = []
+        c3 = []
+        c4 = []
+        for i in range (0,4):
+            c1.append(deck.pop())
+            c2.append(deck.pop())
+            c3.append(deck.pop())
+            c4.append(deck.pop())
+        c1[0] = ("Ace","spades")
+        c2[1] = ("10","heart")
+        c3[0] = ("3","diamonds")
 
 
-            discardPile = []
+        discardPile = []
 
-            P2playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},       #hash dictionaries to store known players cards
-                                        "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                                        "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+        P2playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},       #hash dictionaries to store known players cards
+                                    "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                    "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
 
-            P3playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                                        "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                                        "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+        P3playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                    "player2":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                    "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
 
-            P4playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                                        "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                                        "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+        P4playersCards = {"players": {"player1":{"card1":("Ace","spades"), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                    "player2":{"card1":(None,None), "card2":("10","heart"), "card3":(None,None), "card4":(None,None)},
+                                    "player3":{"card1":("3","diamonds"), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
 
-            p1 = Player(1,c1,0,0,0)
-            p2 = AIPlayer(2,c2,0,0,0,P2playersCards)
-            p3 = AIPlayer(3,c3,0,0,0,P3playersCards)
-            p4 = AIPlayer(4,c4,0,0,0,P4playersCards)
+        p1 = Player(1,c1,0,0,0)
+        p2 = AIPlayer(2,c2,0,0,0,P2playersCards)
+        p3 = AIPlayer(3,c3,0,0,0,P3playersCards)
+        p4 = AIPlayer(4,c4,0,0,0,P4playersCards)
 
-            Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
-            main(Moves,discardPile,Card,Stack,Player,table,virtualTable,False)
-else:
-    import test1
+        Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
+        main(Moves,discardPile,Card,Stack,Player,table,virtualTable,False)
+
 
