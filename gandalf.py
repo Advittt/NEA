@@ -21,6 +21,7 @@ class Stack:
     def size(self):
         return len(self.deck)
 
+
 class Player:               #parent class for humans
     def __init__(self, playerNumber, cards, totalPoints, mistakeCounter,difficulty):
         self.playerNumber = playerNumber
@@ -189,7 +190,7 @@ class Moves:
             print("you can only draw 1 card per turn")
         else:
             if Items[1] == "deck":
-                newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck -- SOMETHIGN BUGGING KEEPS PICKING SAME REPEATED CARDS
+                newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck
             else:
                 newCard = Moves.pickUpNewCardFromDiscardPile(discardPile)       #picks random card from discard pile
             print(f"card drawn:", displayCardToPlayer(newCard))             
@@ -220,21 +221,20 @@ class Moves:
     def help():
         print("""VALID COMMANDS:
             
-        1)SLAP
-        2)draw deck = draw a card from the deck
-        3)draw discard = draw a card from the discard
-        6)swap card = swap one of your cards with the new card drawn
-        7)swap cards = swap multpile of the same value cards with the new card drawn
-        8)play 7 = look at one of your own cards
-        9)play 8 = look at one of your own cards
-        10)play 9 = look at somone elses card
-        11)play 10 = look at somone elses card
-        12)play jack = swap a card with someone else
-        13)play queen = next player misses a go
-        14)gandalf = you declare the final round of the game
-        15)done = finsihed your go
-        16) quit
-        17) save
+        1)draw deck = draw a card from the deck
+        2)draw discard = draw a card from the discard
+        3)swap card = swap one of your cards with the new card drawn
+        4)swap cards = swap multpile of the same value cards with the new card drawn
+        5)play 7 = look at one of your own cards
+        6)play 8 = look at one of your own cards
+        7)play 9 = look at somone elses card
+        8)play 10 = look at somone elses card
+        9)play jack = swap a card with someone else
+        10)play queen = next player misses a go
+        11)gandalf = you declare the final round of the game
+        12)done = finsihed your go
+        13) quit
+        14) save
             """)
     
     def CheckCommandIsValid(self, Items):
@@ -364,7 +364,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
             if skip == False:        
                 print(" \n")
                 table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards)  #create the table with actual cards
-                displayTable(table)
+                #displayTable(table)
                 virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                 print(" \n")
 
@@ -382,7 +382,6 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                 while done == False:
                     duringRound = duringRound + 1
                     while i == 0:
-                        #def player1Turn(Round, skip, done, Gandalf,duringRound,allowSaveGame,newCard,drawACardChances,callGandalfChecker,i,table,virtualTable):
                         allowSaveGame = allowSaveGame + 1
                         if Round == 1 and duringRound == 1:
                             a = int(input("which cards would you like to look at: 1,2,3 or 4")) -1
@@ -402,8 +401,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                         if ValidCommand == "notValid":
                             print("Invalid command")
 
-                        elif ValidCommand == "SLAP":
-                            Moves.slapCommand(Items)
+                        
 
                         elif ValidCommand == "help":
                             help()
@@ -416,7 +414,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                         elif ValidCommand == "discard":
                             if Moves.newCardUsed(newCard) == False:                 #if the new card has already been used, dont do the following command
                                 newCard = Moves.discard(discardPile, newCard)        #e.g. do not append (Non,None to discardPile)#discard card drawn
-                                drawACardChances += 1                               #discard card drawn
+                                drawACardChances += 1                               
                                 callGandalfChecker += 1
                             else:
                                 print("you have already used your card")
@@ -425,7 +423,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             if Moves.newCardUsed(newCard) == False:
                                 Moves.swapCommand(Items,newCard, discardPile,i)
                                 table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                                displayTable(table)
+                                #displayTable(table)
                                 virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                                 displayTable(virtualTable)
                                 callGandalfChecker += 1
@@ -452,7 +450,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             if Moves.newCardUsed(newCard) == False:
                                 newCard = Moves.swapWithSomoneElse(newCard, i, discardPile)                   #swap with soone else - Jack
                                 table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                                displayTable(table)
+                                #displayTable(table)
                                 virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                                 displayTable(virtualTable)
                                 callGandalfChecker += 1
@@ -475,11 +473,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                 i = 5
                                 print("TABLE AT END OF TURN")
                                 table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                                displayTable(table)
+                                #displayTable(table)
                                 virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                                 displayTable(virtualTable)
                                 if len(discardPile) !=0:
-                                    print(f"discard pile: {discardPile[0]}")  
+                                    print(f"discard pile: {discardPile[len(discardPile) -1]}")  
                                 Commands.clear()
                             else:
                                 print("cannot call gandalf")
@@ -492,11 +490,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             i = 5
                             print("TABLE AT END OF TURN")
                             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                            displayTable(table)
+                            #displayTable(table)
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
                             if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile}")
+                                print(f"discard pile: {discardPile[len(discardPile) -1]}")
 
                         elif ValidCommand == "quit":
                             confirm = input("you have not saved this game yet. are you sure you want to quit the game? ")
@@ -595,11 +593,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             i = 5
                             print("TABLE AT END OF TURN")
                             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                            displayTable(table)
+                            #displayTable(table)
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
                             if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile[0]}")  
+                                print(f"discard pile: {discardPile[len(discardPile) -1]}")  
 
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                         time.sleep(5)
@@ -656,7 +654,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                             time.sleep(5)
 
-                        elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
+                        elif newCard[0] == "Jack":       
                             playersCardsValue = []
                             for key in Moves.allPlayers[1].playersCardsDictionary["players"].keys():
                                 x =1
@@ -765,8 +763,8 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                     else:
                                         pass
                                     
-                                    Moves.allPlayers[1].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) #chnages AI players dictionary to new card
-                                    if tempPlayersCardsValue[2] == "player1":
+                                    Moves.allPlayers[1].playersCardsDictionary["players"][tempPlayersCardsValue[2]][tempPlayersCardsValue[3]] = (str(playersCardsValue[0][0]),str(playersCardsValue[0][1])) 
+                                    if tempPlayersCardsValue[2] == "player1":       #changes AI players dictionary to new card
                                         a = 0
                                     elif tempPlayersCardsValue[2] == "player3":
                                         a = 2
@@ -834,11 +832,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                         print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
                         table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                        displayTable(table)
+                        #displayTable(table)
                         virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                         displayTable(virtualTable)
                         if len(discardPile) !=0:
-                            print(f"discard pile: {discardPile}")
+                            print(f"discard pile: {discardPile[len(discardPile) -1]}")
 
                         done = True             #go finished
                         i = 5
@@ -887,11 +885,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             i = 5
                             print("TABLE AT END OF TURN")
                             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                            displayTable(table)
+                            #displayTable(table)
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
                             if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile[0]}")  
+                                print(f"discard pile: {discardPile[len(discardPile) -1]}")  
 
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
                         time.sleep(5)
@@ -1127,11 +1125,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                         print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
                         table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                        displayTable(table)
+                        #displayTable(table)
                         virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                         displayTable(virtualTable)
                         if len(discardPile) !=0:
-                            print(f"discard pile: {discardPile}")
+                            print(f"discard pile: {discardPile[len(discardPile) -1]}")
 
                         done = True             #go finished
                         i = 5
@@ -1179,14 +1177,13 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             i = 5
                             print("TABLE AT END OF TURN")
                             table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                            displayTable(table)
+                            #displayTable(table)
                             virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                             displayTable(virtualTable)
                             if len(discardPile) !=0:
-                                print(f"discard pile: {discardPile[0]}")  
+                                print(f"discard pile: {discardPile[len(discardPile) -1]}")  
 
                         newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                        newCard = ("Jack", "Diamonds")
                         time.sleep(5)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
@@ -1241,7 +1238,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                             time.sleep(5)
 
-                        elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
+                        elif newCard[0] == "Jack":       
                             playersCardsValue = []
                             for key in Moves.allPlayers[i].playersCardsDictionary["players"].keys():
                                 x =1
@@ -1419,11 +1416,11 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                         print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
                         table = createTable(table,p1.cards,p2.cards,p3.cards,p4.cards) #create the table with actual cards
-                        displayTable(table)
+                        #displayTable(table)
                         virtualTable = createVirtualTable(table,p1.cards,p2.cards,p3.cards,p4.cards)        #create the table with virtual cards
                         displayTable(virtualTable)
                         if len(discardPile) !=0:
-                            print(f"discard pile: {discardPile}")
+                            print(f"discard pile: {discardPile[len(discardPile) -1]}")
 
                         done = True             #go finished
                         i = 5
@@ -1550,9 +1547,7 @@ else:
             c2.append(deck.pop())
             c3.append(deck.pop())
             c4.append(deck.pop())
-        c1[0] = ("Ace","spades")
-        c2[1] = ("10","heart")
-        c3[0] = ("3","diamonds")
+        
 
 
         discardPile = []
@@ -1565,16 +1560,16 @@ else:
                                     "player2":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
                                     "player4":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
 
-        P4playersCards = {"players": {"player1":{"card1":("Ace","spades"), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
-                                    "player2":{"card1":(None,None), "card2":("10","heart"), "card3":(None,None), "card4":(None,None)},
-                                    "player3":{"card1":("3","diamonds"), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
+        P4playersCards = {"players": {"player1":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                    "player2":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)},
+                                    "player3":{"card1":(None,None), "card2":(None,None), "card3":(None,None), "card4":(None,None)}}}
 
         p1 = Player(1,c1,0,0,0)
         p2 = AIPlayer(2,c2,0,0,0,P2playersCards)
         p3 = AIPlayer(3,c3,0,0,0,P3playersCards)
         p4 = AIPlayer(4,c4,0,0,0,P4playersCards)
 
-        Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move - need to look into the theory behind this a bit more
+        Moves = Moves(deck,p1,p2,p3,p4,discardPile)            #this passes in the parameters neccesary for class move 
         main(Moves,discardPile,Card,Stack,Player,table,virtualTable,False)
 
 
