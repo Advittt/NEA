@@ -184,7 +184,7 @@ class Moves:
                 print("5 penalty points added")
                 print(f"you have {Moves.allPlayers[counter].mistakeCounter} penalty points")
     
-    def drawCommand(self, Items,deck,discardPile, chances):
+    def drawCommand(self, Items,deck,discardPile, chances, playerNumber):
         if chances > 0:
             print("you cannot draw anymore cards for this round")
             print("you can only draw 1 card per turn")
@@ -193,7 +193,10 @@ class Moves:
                 newCard = Moves.pickUpNewCardFromDeck(deck)         #picks random card from deck
             else:
                 newCard = Moves.pickUpNewCardFromDiscardPile(discardPile)       #picks random card from discard pile
-            print(f"card drawn:", displayCardToPlayer(newCard))             
+            if playerNumber == 1:
+                print(f"card drawn:", displayCardToPlayer(newCard))
+            else:
+                print(f"player {playerNumber} has drawn a card")             
             return newCard
 
     def discard(self,discardPile,newCard):  #adds new card to discardPile
@@ -407,7 +410,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             help()
 
                         elif ValidCommand == "draw":
-                            newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
+                            newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances,1)        #draw card
                             drawACardChances += 1
                             callGandalfChecker += 1
 
@@ -506,46 +509,50 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                         elif ValidCommand == "save":
                             if allowSaveGame == 1:
-                                newGameFileName = input("what do you want to save the game file as: ")
-                                f = open(f"{newGameFileName}.txt", "w")
-                                formatDeck = [] 
-                                for i in range (deck.size()):
-                                    formatDeck.append(deck.peek(i))
-                                f.write(str(formatDeck))
-                                f.write("\n")
-                                f.write(str(discardPile))
-                                f.write("\n")
-                                f.write(str(p1.cards))
-                                f.write("\n")
-                                f.write(str(p2.cards))
-                                f.write("\n")
-                                f.write(str(p3.cards))
-                                f.write("\n")
-                                f.write(str(p4.cards))
-                                f.write("\n")
-                                f.write(str(p1.mistakeCounter))
-                                f.write("\n")
-                                f.write(str(p2.mistakeCounter))
-                                f.write("\n")
-                                f.write(str(p3.mistakeCounter))
-                                f.write("\n")
-                                f.write(str(p4.mistakeCounter))
-                                f.write("\n")
-                                f.write(str(p2.difficulty))
-                                f.write("\n")
-                                f.write(str(p3.difficulty))
-                                f.write("\n")
-                                f.write(str(p4.difficulty))
-                                f.write("\n")
-                                f.write(str(p2.playersCardsDictionary))
-                                f.write("\n")
-                                f.write(str(p3.playersCardsDictionary))
-                                f.write("\n")
-                                f.write(str(p4.playersCardsDictionary))
-                                f.close()          
+                                confirmation = input("Are you sure you want to save and quit? ")
+                                if confirmation == "yes":
+                                    newGameFileName = input("what do you want to save the game file as: ")
+                                    f = open(f"{newGameFileName}.txt", "w")
+                                    formatDeck = [] 
+                                    for i in range (deck.size()):
+                                        formatDeck.append(deck.peek(i))
+                                    f.write(str(formatDeck))
+                                    f.write("\n")
+                                    f.write(str(discardPile))
+                                    f.write("\n")
+                                    f.write(str(p1.cards))
+                                    f.write("\n")
+                                    f.write(str(p2.cards))
+                                    f.write("\n")
+                                    f.write(str(p3.cards))
+                                    f.write("\n")
+                                    f.write(str(p4.cards))
+                                    f.write("\n")
+                                    f.write(str(p1.mistakeCounter))
+                                    f.write("\n")
+                                    f.write(str(p2.mistakeCounter))
+                                    f.write("\n")
+                                    f.write(str(p3.mistakeCounter))
+                                    f.write("\n")
+                                    f.write(str(p4.mistakeCounter))
+                                    f.write("\n")
+                                    f.write(str(p2.difficulty))
+                                    f.write("\n")
+                                    f.write(str(p3.difficulty))
+                                    f.write("\n")
+                                    f.write(str(p4.difficulty))
+                                    f.write("\n")
+                                    f.write(str(p2.playersCardsDictionary))
+                                    f.write("\n")
+                                    f.write(str(p3.playersCardsDictionary))
+                                    f.write("\n")
+                                    f.write(str(p4.playersCardsDictionary))
+                                    f.close()          
 
-                                print("the game has been saved. Goodbye")
-                                break
+                                    print("the game has been saved. Goodbye")
+                                    break
+                                else:
+                                    print("continuing game...")
                             else:
                                 print("you can only save the game at the start of your go")      
                         Commands.clear()
@@ -599,14 +606,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             if len(discardPile) !=0:
                                 print(f"discard pile: {discardPile[len(discardPile) -1]}")  
 
-                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                        time.sleep(5)
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances,2)        #draw card
+                        time.sleep(3)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
                             seenCard = Moves.lookAtOwnCard(p2.cards, newCard, i, p2.playerNumber, 2)
                             knownCards.append(seenCard)
                             newCard = (None,None)
-                            time.sleep(5)
+                            time.sleep(3)
 
                         
                         elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
@@ -652,7 +659,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                             print(f"player {Moves.allPlayers[i].playerNumber} has seen {playerNumber}'s {position} ")
 
-                            time.sleep(5)
+                            time.sleep(3)
 
                         elif newCard[0] == "Jack":       
                             playersCardsValue = []
@@ -741,7 +748,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                                     playersCardsValue[0][0]= tempKnownCard[0]
                                     playersCardsValue[0][1]= tempKnownCard[1]
-                                    print(playersCardsValue)
+                                    
                                     if playersCardsValue[0][0]== 1:
                                         playersCardsValue[0][0] = "Ace"
                                     elif playersCardsValue[0][0]== 11:
@@ -775,14 +782,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                     print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
                             discardPile.append(newCard)
                                 
-                            time.sleep(5)
+                            time.sleep(3)
                         
                         elif newCard[0] == "Queen":     #miss a go
                             print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A QUEEN")
                             a = Moves.skip(newCard)
                             skip = a[0]
                             newCard = a[1]
-                            time.sleep(5)
+                            time.sleep(3)
 
                         else:
                             for realValue in range (4):
@@ -827,7 +834,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                     print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card in poisition {tempCards[3][1] + 1} with the new card")
                                 else:
                                     discardPile.append(newCard)
-                            time.sleep(5)
+                            time.sleep(3)
 
                         print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
@@ -840,7 +847,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                         done = True             #go finished
                         i = 5
-                        time.sleep(10)
+                        time.sleep(5)
 
                     while i == 2:        #player 3 AI
 
@@ -891,14 +898,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             if len(discardPile) !=0:
                                 print(f"discard pile: {discardPile[len(discardPile) -1]}")  
 
-                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                        time.sleep(5)
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances,3)        #draw card
+                        time.sleep(3)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
                             seenCard = Moves.lookAtOwnCard(p3.cards, newCard, i, p3.playerNumber, 2)
                             knownCards.append(seenCard)
                             newCard = (None,None)
-                            time.sleep(5)
+                            time.sleep(3)
 
                         
                         elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
@@ -944,7 +951,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                                 print(f"player {Moves.allPlayers[i].playerNumber} has seen {playerNumber}'s {position} ")
 
-                            time.sleep(5)
+                            time.sleep(3)
 
                         elif newCard[0] == "Jack":      #need to learn how to read hashtable/dictionary 
                             playersCardsValue = []
@@ -1033,7 +1040,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                                     playersCardsValue[0][0]= tempKnownCard[0]
                                     playersCardsValue[0][1]= tempKnownCard[1]
-                                    print(playersCardsValue)
+                                    
                                     if playersCardsValue[0][0]== 1:
                                         playersCardsValue[0][0] = "Ace"
                                     elif playersCardsValue[0][0]== 11:
@@ -1067,14 +1074,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                     print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
                             discardPile.append(newCard)
                                 
-                            time.sleep(5)
+                            time.sleep(3)
                         
                         elif newCard[0] == "Queen":     #miss a go
                             print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A QUEEN")
                             a = Moves.skip(newCard)
                             skip = a[0]
                             newCard = a[1]
-                            time.sleep(5)
+                            time.sleep(3)
 
                         else:
                             for realValue in range (4):
@@ -1120,7 +1127,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                 else:
                                     discardPile.append(newCard)
         
-                            time.sleep(5)
+                            time.sleep(3)
 
                         print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
@@ -1133,7 +1140,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                         done = True             #go finished
                         i = 5
-                        time.sleep(10)
+                        time.sleep(5)
                         
                     while i == 3:               #player 4 AI
                         difficulty = Moves.allPlayers[i].difficulty
@@ -1183,14 +1190,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                             if len(discardPile) !=0:
                                 print(f"discard pile: {discardPile[len(discardPile) -1]}")  
 
-                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances)        #draw card
-                        time.sleep(5)
+                        newCard = Moves.drawCommand(Items,deck,discardPile,drawACardChances,4)        #draw card
+                        time.sleep(3)
 
                         if newCard[0] == "7" or newCard[0] == "8":          #play 7 or 8
                             seenCard = Moves.lookAtOwnCard(p4.cards, newCard, i, p4.playerNumber, 2)
                             knownCards.append(seenCard)
                             newCard = (None,None)
-                            time.sleep(5)
+                            time.sleep(3)
 
                         
                         elif newCard[0] == "9" or newCard[0] == "10":       #play 9 or 10
@@ -1236,7 +1243,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                                 print(f"player {Moves.allPlayers[i].playerNumber} has seen {playerNumber}'s {position} ")
 
-                            time.sleep(5)
+                            time.sleep(3)
 
                         elif newCard[0] == "Jack":       
                             playersCardsValue = []
@@ -1262,7 +1269,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                         x = x+1
 
                             playersCardsValue = merge_sort(playersCardsValue)
-                            print(playersCardsValue)
+                            
 
                             sortedKnownCards = []
                             for val in range(len(knownCards)):
@@ -1359,14 +1366,14 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                     print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card {sortedKnownCards[3][2]+1} with {playersCardsValue[0][2]}'s card {playersCardsValue[0][3]}")
                             discardPile.append(newCard)
                                 
-                            time.sleep(5)
+                            time.sleep(3)
                         
                         elif newCard[0] == "Queen":     #miss a go
                             print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS PLAYED A QUEEN")
                             a = Moves.skip(newCard)
                             skip = a[0]
                             newCard = a[1]
-                            time.sleep(5)
+                            time.sleep(3)
 
                         else:
                             for realValue in range (4):
@@ -1411,7 +1418,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
                                     print(f"player {Moves.allPlayers[i].playerNumber} has swapped their card in poisition {tempCards[3][1] + 1} with the new card")
                                 else:  
                                     discardPile.append(newCard)
-                            time.sleep(5)
+                            time.sleep(3)
 
                         print(f"PLAYER {Moves.allPlayers[i].playerNumber} HAS FINISHED THEIR TURN\n")
                         print("TABLE AT END OF TURN")
@@ -1424,7 +1431,7 @@ def main(Moves,discardPile,Card,Stack,Player,table,virtualTable,preSetDifficulty
 
                         done = True             #go finished
                         i = 5
-                        time.sleep(10)
+                        time.sleep(5)
                     
             else:
                 print(f"***PLAYER {Moves.allPlayers[i].playerNumber} MISSES A GO***")
