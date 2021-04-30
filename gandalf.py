@@ -91,8 +91,8 @@ class Moves:
             else:
                 cardsSwapping.append(int(cards[a][0]))       
                 cardsSwapping1.append([int(cards[a][0]),cards[a][1]])                             #stores the value of the cards
-        if round(np.power(np.prod(cardsSwapping), 1/len(cardsSwapping)),10) == float(cardsSwapping[0]):      #checks if all the cards have the same value by multpilying them all and then finding the nth root using numpy
-            for i in range (x):
+        if round(np.power(np.prod(cardsSwapping), 1/len(cardsSwapping)),10) == float(cardsSwapping[0]):      #checks if all the cards have the same value by multpilying them all 
+            for i in range (x):                                                                              #and then finding the nth root using numpy
                 Moves.discard(discardPile, cardsSwapping1[i]) #discard the players card
             for j in cardPosition1:
                 cards[j] = " "              #remove players card from their hand
